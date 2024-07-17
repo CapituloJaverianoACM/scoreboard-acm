@@ -1,0 +1,32 @@
+import {configureStore} from '@reduxjs/toolkit'
+import resultsSlice from "./resultsSlice";
+import {
+    createStateSyncMiddleware,
+    initMessageListener
+} from 'redux-state-sync'
+
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+
+const persistConfig = {
+    key: 'root',
+    storage
+}
+
+const persistedReducer = persistReducer(persistConfig, resultsSlice)
+
+const store = configureStore({
+    reducer: {
+        results: persistedReducer
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(createStateSyncMiddleware({
+            blacklist: ["persist/PERSIST", "persist/REHYDRATE"]
+        })),
+})
+
+initMessageListener(store)
+
+export const persistor = persistStore(store)
+
+export default store;
