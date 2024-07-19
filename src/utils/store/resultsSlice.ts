@@ -1,16 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit'
+import ScoreboardMessage from "../types/scoreboard.ts";
 
 export const resultsSlice = createSlice({
     name: 'results',
     initialState: {
-        value: Array<string>()
+        value: Array<ScoreboardMessage>()
     },
     reducers: {
         add: (state, result) => {
-            state.value.push(result.payload)
+            state.value.push({
+                type: "test",
+                payload: result.payload
+            })
         },
         clear: (state) => {
-            state.value = new Array<string>()
+            state.value = new Array<ScoreboardMessage>()
         }
     }
 })

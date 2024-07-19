@@ -1,27 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import AdminLogin from './components/admin/AdminLogin.tsx'
 import './index.css'
-import {
-    createBrowserRouter,
-    RouterProvider
-} from 'react-router-dom'
-import ScoreBoard from "./components/scoreboard/ScoreBoard.tsx";
+import { RouterProvider } from 'react-router-dom'
 import {Provider} from "react-redux";
 import store from './utils/store/store.ts'
 import { persistor } from './utils/store/store.ts'
 import { PersistGate } from "redux-persist/integration/react";
-
-const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <ScoreBoard />
-    },
-    {
-        path: '/admin',
-        element: <AdminLogin />
-    }
-])
+import router from "./routes.tsx";
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
