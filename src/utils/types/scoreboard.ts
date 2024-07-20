@@ -5,7 +5,7 @@ type TeamSubmission = {
 }
 
 type ScoreboardMessage = {
-    type: string,
+    type: "SUBMISSION" | "TIME_FREEZE" | "REVELATOR",
     payload: TeamSubmission | string
 }
 

@@ -7,9 +7,7 @@ import {add, clear} from "../../utils/store/resultsSlice.ts";
     Para agregar un resultado -> dispatch(add(resultado))
     Para limpiar -> disptach(clear())
  */
-
 const AdminPage = () : ReactElement => {
-
     const dispatch = useDispatch();
 
     const handleEvent = (e) => {
