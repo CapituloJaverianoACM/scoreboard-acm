@@ -1,12 +1,16 @@
-import {ReactElement} from "react";
-import Header from "./Header.tsx";
+import { ReactElement } from "react";
 import Spline from "@splinetool/react-spline";
-import Footer from "./Footer.tsx";
 import Contributor from './Contributor.tsx'
+import { useNavigate } from 'react-router-dom'
 import './landing.css'
 
 const Landing = () : ReactElement => {
-// data-aos="fade-left" data-aos-duration="1000"
+
+    const navigate = useNavigate()
+    const handleClick = () => {
+        navigate("/create")
+    }
+
     return (
         <div className="text-white">
             <div className="relative h-[85vh] flex justify-evenly items-center text-white">
@@ -15,7 +19,10 @@ const Landing = () : ReactElement => {
                     <div className="flex flex-col justify-center items-center gap-5">
                         <h1>Create your contest scoreboard</h1>
                         <button
-                            className="transition duration-500 w-[10vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black">Create
+                            className="transition duration-500 w-[10vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
+                            onClick={handleClick}
+                        >
+                            Create
                         </button>
                     </div>
                 </div>
