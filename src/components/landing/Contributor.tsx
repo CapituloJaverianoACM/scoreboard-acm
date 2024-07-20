@@ -13,7 +13,9 @@ const Contributor = () : ReactElement => {
             }
         })
             .then(res => res.json())
-            .then(contrib => setContributors(contrib))
+            .then(contrib => {
+                setContributors(contrib)
+            })
             .catch(error => console.log(error))
     }, []);
     // avatar_url, html_url, login
