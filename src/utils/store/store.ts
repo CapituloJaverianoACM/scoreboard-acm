@@ -1,34 +1,32 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { createStateSyncMiddleware, initMessageListener } from 'redux-state-sync';
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import {configureStore} from '@reduxjs/toolkit'
+import resultsSlice from "./resultsSlice";
+import {
+    createStateSyncMiddleware,
+    initMessageListener
+} from 'redux-state-sync'
 
-import resultsReducer from './resultsSlice';
-import problemReducer from './problemSlice';
-import teamReducer from './teamSlice';
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
 
 const persistConfig = {
     key: 'root',
-    storage,
-};
+    storage
+}
 
-const rootReducer = combineReducers({
-    results: resultsReducer,
-    problems: problemReducer,
-    teams : teamReducer,
-});
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+const persistedReducer = persistReducer(persistConfig, resultsSlice)
 
 const store = configureStore({
-    reducer: persistedReducer,
+    reducer: {
+        results: persistedReducer
+    },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(createStateSyncMiddleware({
-            blacklist: ['persist/PERSIST', 'persist/REHYDRATE'],
+            blacklist: ["persist/PERSIST", "persist/REHYDRATE"]
         })),
-});
+})
 
-initMessageListener(store);
+initMessageListener(store)
 
-export const persistor = persistStore(store);
+export const persistor = persistStore(store)
+
 export default store;
