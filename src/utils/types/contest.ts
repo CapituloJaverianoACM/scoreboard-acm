@@ -8,7 +8,6 @@ type Team = {
     shortName: string
 }
 
-
 type TeamResult = {
     problem: Problem,
     tries: number,
