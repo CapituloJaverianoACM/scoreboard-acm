@@ -74,7 +74,34 @@ const CreateContest = (): ReactElement => {
     };
 
     const handleCreateContest = () => {
-        navigate("/scoreboard");
+        const teamStatus = [];
+        for (let i = 0; i < teams.length; i++) {
+            const team = teams[i];
+            const results = [];
+            for (let j = 0; j < problems.length; j++) {
+                results.push({
+                    problem: problems[j],
+                    tries: 0,
+                    acceptedMinute: 0,
+                    status: "PENDING"
+                });
+            }
+            teamStatus.push({
+                team: team,
+                results: results,
+                penalty: 0
+            });
+        }
+
+        const contest = {
+            problems: problems,
+            teams: teams,
+            teamStatus: teamStatus,
+            teamResults: []
+        };
+
+
+        navigate("/scoreboard", {state: {contest: contest}});
         const newTab = window.open('/admin', '_blank');
         if (newTab) {
             newTab.focus();
