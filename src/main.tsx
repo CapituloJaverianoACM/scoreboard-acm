@@ -7,13 +7,15 @@ import store from './utils/store/store.ts'
 import { persistor } from './utils/store/store.ts'
 import { PersistGate } from "redux-persist/integration/react";
 import router from "./routes.tsx";
-
+import Template from "./components/landing/Template.tsx";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>
         <PersistGate persistor={persistor}>
-            <RouterProvider router={router} />
+            <Template>
+                <RouterProvider router={router} />
+            </Template>
         </PersistGate>
     </Provider>
   </React.StrictMode>,
