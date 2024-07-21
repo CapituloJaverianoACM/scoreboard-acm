@@ -4,9 +4,11 @@ import { addProblem } from "../../utils/store/problemSlice";
 import { Problem, Team } from "../../utils/types/contest";
 import { RootState } from "@reduxjs/toolkit/query";
 import { addTeam } from "../../utils/store/teamSlice.ts";
+import {useNavigate} from "react-router-dom";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const problems = useSelector((state: RootState) => {
         return state.problems.value;
@@ -71,11 +73,25 @@ const CreateContest = (): ReactElement => {
         }
     };
 
+    const handleCreateContest = () => {
+        navigate("/scoreboard");
+        const newTab = window.open('/admin', '_blank');
+        if (newTab) {
+            newTab.focus();
+        }
+    }
+
+    /*
+    const handleCleanLocalStorage = () => {
+        localStorage.clear();
+    }
+     */
+
     return (
         <div className="relative h-[85vh] flex flex-col justify-center items-center text-white mt-4">
             <div className="mt-4">
                 <h2 className="text-2xl mb-2">Problems List</h2>
-                <ul>
+                <ul className="scroll-auto">
                     {problems.map((problem, index) => (
                         <li key={index} className="bg-gray-800 p-2 rounded">
                             {problem.letter}: {problem.name}
@@ -112,7 +128,7 @@ const CreateContest = (): ReactElement => {
                 <h2 className="text-2xl mb-2">Teams List</h2>
                 <ul >
                     {teams.map((team, index) => (
-                        <li key={index} className="bg-gray-800 p-2 rounded">
+                        <li key={index} className="bg-gray-800 rounded m-1.5 p-4">
                             {team.shortName}: {team.name}
                         </li>
                     ))}
@@ -142,6 +158,15 @@ const CreateContest = (): ReactElement => {
                     Add Team
                 </button>
             </div>
+
+            <div className="flex justify-center items-center">
+            </div>
+
+            <button
+                className = "p-2 bg-red-500 rounded text-white"
+                onClick={handleCreateContest}>
+                Create Contest
+            </button>
         </div>
     );
 };
