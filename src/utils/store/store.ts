@@ -6,6 +6,7 @@ import storage from 'redux-persist/lib/storage';
 import resultsReducer from './resultsSlice';
 import problemReducer from './problemSlice';
 import teamReducer from './teamSlice';
+import teamStatusReducer from './teamStatusSlice';
 
 const persistConfig = {
     key: 'root',
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
     results: resultsReducer,
     problems: problemReducer,
     teams : teamReducer,
+    teamStatus : teamStatusReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
