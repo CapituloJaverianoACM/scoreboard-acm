@@ -5,6 +5,7 @@ import { Problem, Team } from "../../utils/types/contest";
 import { RootState } from "@reduxjs/toolkit/query";
 import { addTeam } from "../../utils/store/teamSlice.ts";
 import {useNavigate} from "react-router-dom";
+import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice.ts";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
@@ -16,6 +17,10 @@ const CreateContest = (): ReactElement => {
 
     const teams = useSelector((state: RootState) => {
         return state.teams.value;
+    });
+
+    const teamsStatus = useSelector((state: RootState) => {
+        return state.teamStatus.value;
     });
 
     // Interactive elements state
@@ -74,7 +79,7 @@ const CreateContest = (): ReactElement => {
     };
 
     const handleCreateContest = () => {
-        const teamStatus = [];
+        dispatch(clearTeamStatus());
         for (let i = 0; i < teams.length; i++) {
             const team = teams[i];
             const results = [];
@@ -83,20 +88,20 @@ const CreateContest = (): ReactElement => {
                     problem: problems[j],
                     tries: 0,
                     acceptedMinute: 0,
-                    status: "PENDING"
+                    status: "AC"
                 });
             }
-            teamStatus.push({
+            dispatch(addTeamStatus({
                 team: team,
                 results: results,
                 penalty: 0
-            });
+            }));
         }
 
         const contest = {
             problems: problems,
             teams: teams,
-            teamStatus: teamStatus,
+            teamStatus: teamsStatus,
             teamResults: []
         };
 
