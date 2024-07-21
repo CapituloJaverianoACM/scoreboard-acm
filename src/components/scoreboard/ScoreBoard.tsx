@@ -16,26 +16,40 @@ const ScoreBoard = () : ReactElement => {
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
 
     return (
-        <div className="p-50">
-            <h1 className="p-5 text-2xl">Tabla de posiciones</h1>
-            {/* Header row */}
-            <div className="flex flex-row space-x-4 text-[25px] ">
-                <div className="w-96 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
-                    Equipo
+        <div className="pl-10">
+            {/* Contest data */}
+            <div className="flex felx-row space-x-8 p-9 h-[200px] w-[1000px]">
+                <div className="flex flex-col space-y-3 w-[50%] rounded-md">
+                    <h1 className="text-4xl font-bold text-white"> Contest name </h1>
+                    <h1 className="text-2xl text-white"> July 2024 </h1>
+                    <h1 className="text-2xl text-white"> Duration: 2 hours </h1>
                 </div>
-                {problems.map((problem, index) => {
-                    return (
-                        <div key={index} className="w-20 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
-                            {problem.letter}
-                        </div>
-                    );
-                })}
+                <div className="w-[50%] bg-[#ffffff70] rounded-md">
+                    { /* TODO: Timer */ }
+                    <h1 className="text-4xl font-bold text-center text-black"> TIMER </h1>
+                </div>
             </div>
-            {/* Teams */}
-            <div className="flex flex-col space-y-4">
-                {teams.map((teamStatus, index) => (
-                    <TeamRow key={index} pos={index+1} teamStatus={teamStatus} />
-                ))}
+            {/* Table */}
+            <div>
+                {/* Header row */}
+                <div className="flex flex-row space-x-4 text-[25px] ">
+                    <div className="w-96 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
+                        Teams
+                    </div>
+                    {problems.map((problem, index) => {
+                        return (
+                            <div key={index} className="w-20 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
+                                {problem.letter}
+                            </div>
+                        );
+                    })}
+                </div>
+                {/* Teams */}
+                <div className="flex flex-col space-y-4">
+                    {teams.map((teamStatus, index) => (
+                        <TeamRow key={index} pos={index+1} teamStatus={teamStatus} />
+                    ))}
+                </div>
             </div>
         </div>
     );
