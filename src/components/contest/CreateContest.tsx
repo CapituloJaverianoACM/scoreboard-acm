@@ -2,7 +2,6 @@ import React, { ReactElement, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProblem } from "../../utils/store/problemSlice";
 import { Problem, Team, TeamStatus } from "../../utils/types/contest";
-import { RootState } from "@reduxjs/toolkit/query";
 import { addTeam } from "../../utils/store/teamSlice.ts";
 import { useNavigate } from "react-router-dom";
 import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice.ts";
@@ -18,10 +17,14 @@ const CreateContest = (): ReactElement => {
 
     const [problemLetter, setProblemLetter] = useState<string>("");
     const [problemName, setProblemName] = useState<string>("");
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [errorMessageProblem, setErrorMessageProblem] = useState<string>("");
 
     const [teamName, setTeamName] = useState<string>("");
     const [teamShortName, setTeamShortName] = useState<string>("");
+    const [errorMessageTeam, setErrorMessageTeam] = useState<string>("");
+
+    const [modalProblemIsOpen, setModalProblemIsOpen] = useState(false);
+    const [modalTeamIsOpen, setModalTeamIsOpen] = useState(false);
 
     const handleLetterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setProblemLetter(e.target.value);
@@ -29,14 +32,6 @@ const CreateContest = (): ReactElement => {
 
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setProblemName(e.target.value);
-    };
-
-    const handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTeamName(e.target.value);
-    };
-
-    const handleTeamShortNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTeamShortName(e.target.value);
     };
 
     function validateProblemLetter(problemLetter: string): boolean {
@@ -48,12 +43,12 @@ const CreateContest = (): ReactElement => {
 
     const handleAddProblem = () => {
         if (!validateProblemLetter(problemLetter)){
-            setErrorMessage(`Wrong problem letter, expected letter:  ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
+            setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
             return;
         }
 
         if (problemName.length <= 0) {
-            setErrorMessage("Problem name is required");
+            setErrorMessageProblem("Problem name is required");
             return;
         }
 
@@ -64,15 +59,48 @@ const CreateContest = (): ReactElement => {
         dispatch(addProblem(problem));
         setProblemLetter("");
         setProblemName("");
-        setErrorMessage("");
+        setErrorMessageProblem("");
     };
 
-    const clearLocalStorage = () => {
-        localStorage.clear();
-    }
+    const openModalProblem = () => {
+        setModalProblemIsOpen(true);
+    };
+
+    const afterOpenModalProblem = () => {
+        setProblemLetter("");
+        setProblemName("");
+        setErrorMessageProblem("");
+    };
+
+    const closeModalAddProblem = () => {
+        if (validateProblemLetter(problemLetter) && problemName.length > 0) {
+            handleAddProblem();
+            setModalProblemIsOpen(false);
+        } else {
+            setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
+        }
+    };
+
+    const closeModalWithoutAddProblem = () => {
+        setModalProblemIsOpen(false);
+    };
+
+    const handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTeamName(e.target.value);
+    };
+
+    const handleTeamShortNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setTeamShortName(e.target.value);
+    };
 
     const handleCreateTeam = () => {
-        if (teamShortName.length > 0 && teamName.length > 0) {
+        if (teamShortName.length <= 0 && teamName.length <= 0) {
+            setErrorMessageTeam("Team name and short name are required");
+        } else if (teamShortName.length <= 0) {
+            setErrorMessageTeam("Team short name is required");
+        } else if (teamName.length <= 0) {
+            setErrorMessageTeam("Team name is required");
+        } else {
             const team: Team = {
                 shortName: teamShortName,
                 name: teamName,
@@ -80,27 +108,36 @@ const CreateContest = (): ReactElement => {
             dispatch(addTeam(team));
             setTeamShortName("");
             setTeamName("");
+            setErrorMessageTeam("");
         }
     };
 
-    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const clearLocalStorage = () => {
+        localStorage.clear();
+    };
 
-    const openModal = () => {
-        setModalIsOpen(true);
-    }
+    const openModalTeam = () => {
+        setModalTeamIsOpen(true);
+    };
 
-    const afterOpenModal = () => {}
-
-    const closeModalAddProblem = () => {
-        if (validateProblemLetter(problemLetter) && problemName.length > 0) {
-            setModalIsOpen(false);
+    const closeModalAddTeam = () => {
+        if (teamName.length > 0 && teamShortName.length > 0) {
+            handleCreateTeam();
+            setModalTeamIsOpen(false);
+        } else {
+            setErrorMessageTeam("Team name and short name are required");
         }
-        handleAddProblem();
-    }
+    };
 
-    const closeModalWithOutAddProblem = () => {
-        setModalIsOpen(false);
-    }
+    const closeModalWithoutAddTeam = () => {
+        setModalTeamIsOpen(false);
+    };
+
+    const afterOpenModalTeam = () => {
+        setTeamName("");
+        setTeamShortName("");
+        setErrorMessageTeam("");
+    };
 
     const handleCreateContest = () => {
         dispatch(clearTeamStatus());
@@ -145,19 +182,19 @@ const CreateContest = (): ReactElement => {
                 </ul>
             </div>
 
-            <button onClick={openModal} className="p-2 bg-blue-500 rounded text-white mt-8">
+            <button onClick={openModalProblem} className="p-2 bg-blue-500 rounded text-white mt-8">
                 Add Problem
             </button>
             <Modal
-                isOpen={modalIsOpen}
-                onAfterOpen={afterOpenModal}
+                isOpen={modalProblemIsOpen}
+                onAfterOpen={afterOpenModalProblem}
                 onRequestClose={closeModalAddProblem}
                 contentLabel="Add Problem Modal"
                 className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
                 overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
             >
                 <div className="flex flex-col items-center mt-4 w-full">
-                    <h2 className="text-2xl mb-2 text-white">Enter the details of the problem. </h2>
+                    <h2 className="text-2xl mb-2 text-white">Enter the details of the problem.</h2>
                     <input
                         type="text"
                         placeholder="Problem Letter"
@@ -172,8 +209,8 @@ const CreateContest = (): ReactElement => {
                         value={problemName}
                         onChange={handleNameChange}
                     />
-                    {errorMessage && (
-                        <p className="text-red-300">{errorMessage}</p>
+                    {errorMessageProblem && (
+                        <p className="text-red-300">{errorMessageProblem}</p>
                     )}
                     <div className="flex space-x-2 w-full justify-center mt-8">
                         <button
@@ -183,7 +220,7 @@ const CreateContest = (): ReactElement => {
                             Add Problem
                         </button>
                         <button
-                            onClick={closeModalWithOutAddProblem}
+                            onClick={closeModalWithoutAddProblem}
                             className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
                         >
                             Back
@@ -203,32 +240,59 @@ const CreateContest = (): ReactElement => {
                 </ul>
             </div>
 
-            <div className="flex flex-col items-center mt-4 mb-4">
-                <input
-                    type="text"
-                    placeholder="Short Team Name"
-                    className="p-2 m-2 bg-gray-200 text-black border border-gray-400 rounded"
-                    value={teamShortName}
-                    onChange={handleTeamShortNameChange}
-                />
-                <input
-                    type="text"
-                    placeholder="Team Name"
-                    className="p-2 m-2 bg-gray-200 text-black border border-gray-400 rounded"
-                    value={teamName}
-                    onChange={handleTeamNameChange}
-                />
-                <button
-                    onClick={handleCreateTeam}
-                    className="p-2 bg-blue-500 rounded text-white"
-                >
-                    Add Team
-                </button>
-            </div>
+            <button
+                onClick={openModalTeam}
+                className="p-2 bg-blue-500 rounded text-white"
+            >
+                Add Team
+            </button>
+            <Modal
+                isOpen={modalTeamIsOpen}
+                onAfterOpen={afterOpenModalTeam}
+                onRequestClose={closeModalAddTeam}
+                contentLabel="Add Team Modal"
+                className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+            >
+                <div className="flex flex-col items-center mt-4 w-full">
+                    <h2 className="text-2xl mb-2 text-white">Enter the details of the team.</h2>
+                    <input
+                        type="text"
+                        placeholder="Team short name"
+                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                        value={teamShortName}
+                        onChange={handleTeamShortNameChange}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Team Name"
+                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                        value={teamName}
+                        onChange={handleTeamNameChange}
+                    />
+                    {errorMessageTeam && (
+                        <p className="text-red-300">{errorMessageTeam}</p>
+                    )}
+                    <div className="flex space-x-2 w-full justify-center mt-8">
+                        <button
+                            onClick={closeModalAddTeam}
+                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                        >
+                            Add Team
+                        </button>
+                        <button
+                            onClick={closeModalWithoutAddTeam}
+                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                        >
+                            Back
+                        </button>
+                    </div>
+                </div>
+            </Modal>
 
             <button
                 className="p-2 bg-red-500 rounded text-white"
-                onClick={clearLocalStorage}
+                onClick={handleCreateContest}
             >
                 Create Contest
             </button>
