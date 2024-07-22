@@ -175,133 +175,129 @@ const CreateContest = (): ReactElement => {
     };
 
     return (
-        <div className="relative h-[85vh] flex flex-col justify-center items-center text-white mt-12 -scroll-mb-12">
-            <div className="mt-4">
-                <h2 className="text-2xl mb-2">Problems List</h2>
-                <ul className="scroll-auto">
-                    {problems.map((problem, index) => (
-                        <li key={index} className="bg-gray-800 p-2 rounded">
-                            {problem.letter}: {problem.name}
-                        </li>
-                    ))}
-                </ul>
-            </div>
 
-            <button onClick={openModalProblem} className="p-2 bg-blue-500 rounded text-white mt-8">
-                Add Problem
-            </button>
-            <Modal
-                isOpen={modalProblemIsOpen}
-                onAfterOpen={afterOpenModalProblem}
-                onRequestClose={closeModalAddProblem}
-                contentLabel="Add Problem Modal"
-                className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
-                overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-            >
-                <div className="flex flex-col items-center mt-4 w-full">
-                    <h2 className="text-2xl mb-2 text-white">Enter the details of the problem.</h2>
-                    <input
-                        type="text"
-                        placeholder="Problem Letter"
-                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                        value={problemLetter}
-                        onChange={handleLetterChange}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Problem Name"
-                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                        value={problemName}
-                        onChange={handleNameChange}
-                    />
-                    {errorMessageProblem && (
-                        <p className="text-red-300">{errorMessageProblem}</p>
-                    )}
-                    <div className="flex space-x-2 w-full justify-center mt-8">
-                        <button
-                            onClick={closeModalAddProblem}
-                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                        >
+            <div className="flex-grow flex flex-col justify-center items-center text-white mt-12">
+                <div className="grid grid-cols-2 gap-4 w-full px-12">
+                    <div>
+                        <h2 className="text-2xl mb-2">Problems List</h2>
+                        <ul className="max-h-[50vh] overflow-y-auto">
+                            {problems.map((problem, index) => (
+                                <li key={index} className="bg-gray-800 p-2 rounded mb-2">
+                                    {problem.letter}: {problem.name}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={openModalProblem} className="p-2 bg-blue-500 rounded text-white mt-4">
                             Add Problem
                         </button>
-                        <button
-                            onClick={closeModalWithoutAddProblem}
-                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                        >
-                            Back
-                        </button>
                     </div>
-                </div>
-            </Modal>
-
-            <div className="mt-4">
-                <h2 className="text-2xl mb-2">Teams List</h2>
-                <ul>
-                    {teams.map((team, index) => (
-                        <li key={index} className="bg-gray-800 rounded m-1.5 p-4">
-                            {team.shortName}: {team.name}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            <button
-                onClick={openModalTeam}
-                className="p-2 bg-blue-500 rounded text-white"
-            >
-                Add Team
-            </button>
-            <Modal
-                isOpen={modalTeamIsOpen}
-                onAfterOpen={afterOpenModalTeam}
-                onRequestClose={closeModalAddTeam}
-                contentLabel="Add Team Modal"
-                className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
-                overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-            >
-                <div className="flex flex-col items-center mt-4 w-full">
-                    <h2 className="text-2xl mb-2 text-white">Enter the details of the team.</h2>
-                    <input
-                        type="text"
-                        placeholder="Team short name"
-                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                        value={teamShortName}
-                        onChange={handleTeamShortNameChange}
-                    />
-                    <input
-                        type="text"
-                        placeholder="Team Name"
-                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                        value={teamName}
-                        onChange={handleTeamNameChange}
-                    />
-                    {errorMessageTeam && (
-                        <p className="text-red-300">{errorMessageTeam}</p>
-                    )}
-                    <div className="flex space-x-2 w-full justify-center mt-8">
-                        <button
-                            onClick={closeModalAddTeam}
-                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                        >
+                    <div>
+                        <h2 className="text-2xl mb-2">Teams List</h2>
+                        <ul className="max-h-[50vh] overflow-y-auto">
+                            {teams.map((team, index) => (
+                                <li key={index} className="bg-gray-800 p-2 rounded mb-2">
+                                    {team.shortName}: {team.name}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={openModalTeam} className="p-2 bg-blue-500 rounded text-white mt-4">
                             Add Team
                         </button>
-                        <button
-                            onClick={closeModalWithoutAddTeam}
-                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                        >
-                            Back
-                        </button>
                     </div>
                 </div>
-            </Modal>
 
-            <button
-                className="p-2 bg-red-500 rounded text-white"
-                onClick={handleCreateContest}
-            >
-                Create Contest
-            </button>
-        </div>
+                <Modal
+                    isOpen={modalProblemIsOpen}
+                    onAfterOpen={afterOpenModalProblem}
+                    onRequestClose={closeModalAddProblem}
+                    contentLabel="Add Problem Modal"
+                    className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+                >
+                    <div className="flex flex-col items-center mt-4 w-full">
+                        <h2 className="text-2xl mb-2 text-white">Enter the details of the problem.</h2>
+                        <input
+                            type="text"
+                            placeholder="Problem Letter"
+                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                            value={problemLetter}
+                            onChange={handleLetterChange}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Problem Name"
+                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                            value={problemName}
+                            onChange={handleNameChange}
+                        />
+                        {errorMessageProblem && (
+                            <p className="text-red-300">{errorMessageProblem}</p>
+                        )}
+                        <div className="flex space-x-2 w-full justify-center mt-8">
+                            <button
+                                onClick={closeModalAddProblem}
+                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                            >
+                                Add Problem
+                            </button>
+                            <button
+                                onClick={closeModalWithoutAddProblem}
+                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+
+                <Modal
+                    isOpen={modalTeamIsOpen}
+                    onAfterOpen={afterOpenModalTeam}
+                    onRequestClose={closeModalAddTeam}
+                    contentLabel="Add Team Modal"
+                    className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
+                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+                >
+                    <div className="flex flex-col items-center mt-4 w-full">
+                        <h2 className="text-2xl mb-2 text-white">Enter the details of the team.</h2>
+                        <input
+                            type="text"
+                            placeholder="Team Short Name"
+                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                            value={teamShortName}
+                            onChange={handleTeamShortNameChange}
+                        />
+                        <input
+                            type="text"
+                            placeholder="Team Name"
+                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                            value={teamName}
+                            onChange={handleTeamNameChange}
+                        />
+                        {errorMessageTeam && (
+                            <p className="text-red-300">{errorMessageTeam}</p>
+                        )}
+                        <div className="flex space-x-2 w-full justify-center mt-8">
+                            <button
+                                onClick={closeModalAddTeam}
+                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                            >
+                                Add Team
+                            </button>
+                            <button
+                                onClick={closeModalWithoutAddTeam}
+                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                            >
+                                Back
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+
+                <button onClick={handleCreateContest} className="p-2 bg-blue-500 rounded text-white mt-12">
+                    Create Contest
+                </button>
+            </div>
     );
 };
 
