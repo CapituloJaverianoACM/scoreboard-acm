@@ -42,16 +42,6 @@ const CreateContest = (): ReactElement => {
     }
 
     const handleAddProblem = () => {
-        if (!validateProblemLetter(problemLetter)){
-            setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
-            return;
-        }
-
-        if (problemName.length <= 0) {
-            setErrorMessageProblem("Problem name is required");
-            return;
-        }
-
         const problem: Problem = {
             letter: problemLetter,
             name: problemName,
@@ -73,11 +63,17 @@ const CreateContest = (): ReactElement => {
     };
 
     const closeModalAddProblem = () => {
-        if (validateProblemLetter(problemLetter) && problemName.length > 0) {
+        if (!validateProblemLetter(problemLetter)){
+            setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
+            return;
+        }
+        else if (problemName.length <= 0) {
+            setErrorMessageProblem("Problem name is required");
+            return;
+        }
+        else{
             handleAddProblem();
             setModalProblemIsOpen(false);
-        } else {
-            setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
         }
     };
 
@@ -94,40 +90,45 @@ const CreateContest = (): ReactElement => {
     };
 
     const handleCreateTeam = () => {
-        if (teamShortName.length <= 0 && teamName.length <= 0) {
-            setErrorMessageTeam("Team name and short name are required");
-        } else if (teamShortName.length <= 0) {
-            setErrorMessageTeam("Team short name is required");
-        } else if (teamName.length <= 0) {
-            setErrorMessageTeam("Team name is required");
-        } else {
-            const team: Team = {
-                shortName: teamShortName,
-                name: teamName,
-            };
-            dispatch(addTeam(team));
-            setTeamShortName("");
-            setTeamName("");
-            setErrorMessageTeam("");
-        }
+        const team: Team = {
+            shortName: teamShortName,
+            name: teamName,
+        };
+        dispatch(addTeam(team));
+        setTeamShortName("");
+        setTeamName("");
+        setErrorMessageTeam("");
     };
 
-    const clearLocalStorage = () => {
-        localStorage.clear();
-    };
 
     const openModalTeam = () => {
         setModalTeamIsOpen(true);
     };
 
     const closeModalAddTeam = () => {
-        if (teamName.length > 0 && teamShortName.length > 0) {
-            handleCreateTeam();
-            setModalTeamIsOpen(false);
-        } else {
+        if (teamShortName.length <= 0 && teamName.length <= 0) {
             setErrorMessageTeam("Team name and short name are required");
+        } else if (teamShortName.length <= 0) {
+            setErrorMessageTeam("Team short name is required");
+        } else if (teamName.length <= 0) {
+            setErrorMessageTeam("Team name is required");
+        } else if (teamNameExists(teamName)) {
+            setErrorMessageTeam("Team name already exists");
+        }
+        else{
+            handleCreateTeam()
+            setModalTeamIsOpen(false);
         }
     };
+
+    function teamNameExists(teamName: string): boolean {
+        for (let i = 0; i < teams.length; i++) {
+            if (teams[i].name === teamName) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     const closeModalWithoutAddTeam = () => {
         setModalTeamIsOpen(false);
@@ -137,6 +138,10 @@ const CreateContest = (): ReactElement => {
         setTeamName("");
         setTeamShortName("");
         setErrorMessageTeam("");
+    };
+
+    const clearLocalStorage = () => {
+        localStorage.clear();
     };
 
     const handleCreateContest = () => {
@@ -170,7 +175,7 @@ const CreateContest = (): ReactElement => {
     };
 
     return (
-        <div className="relative h-[85vh] flex flex-col justify-center items-center text-white mt-4">
+        <div className="relative h-[85vh] flex flex-col justify-center items-center text-white mt-12 -scroll-mb-12">
             <div className="mt-4">
                 <h2 className="text-2xl mb-2">Problems List</h2>
                 <ul className="scroll-auto">
