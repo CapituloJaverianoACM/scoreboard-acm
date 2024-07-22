@@ -9,9 +9,8 @@ const ScoreBoard = () : ReactElement => {
     const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
     // console.log(`Este es el tam ${resultsList.length}`)
     const location = useLocation();
-    const contest = location.state?.contest;
+    const contest = useSelector((state : any) => state.contest.value);
     console.log(contest);
-
     const teams : TeamStatus[] = useSelector((state : any) => state.teamStatus.value);
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
 

@@ -7,6 +7,7 @@ import resultsReducer from './resultsSlice';
 import problemReducer from './problemSlice';
 import teamReducer from './teamSlice';
 import teamStatusReducer from './teamStatusSlice';
+import contestReducer from './contestSlice';
 
 const persistConfig = {
     key: 'root',
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
     results: resultsReducer,
     problems: problemReducer,
     teams : teamReducer,
-    teamStatus : teamStatusReducer
+    teamStatus : teamStatusReducer,
+    contest : contestReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
