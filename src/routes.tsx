@@ -1,14 +1,17 @@
 import {createBrowserRouter} from "react-router-dom";
-import ScoreBoard from "./components/scoreboard/ScoreBoard.tsx";
 import AdminPage from "./components/admin/AdminPage.tsx";
 import React from "react";
 import Revelator from "./components/scoreboard/Revelator.tsx";
+import Landing from "./components/landing/Landing.tsx";
+import CreateContest from "./components/admin/CreateContest.tsx";
+import ScoreBoard from "./components/scoreboard/ScoreBoard.tsx";
 import JudgePage from "./components/admin/JudgePage.tsx";
+
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <ScoreBoard />
+        element: <Landing />
     },
     {
         path: '/admin',
@@ -19,7 +22,15 @@ const router = createBrowserRouter([
         element: <Revelator />
     },
     {
-        path: '/judgee',
+        path: '/scoreboard',
+        element: <ScoreBoard />
+    },
+    {
+        path: '/create',
+        element: <CreateContest />
+    },
+    {
+        path: '/judge',
         element: <JudgePage />
     }
 ])
