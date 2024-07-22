@@ -6,6 +6,7 @@ import { addTeam } from "../../utils/store/teamSlice.ts";
 import { useNavigate } from "react-router-dom";
 import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice.ts";
 import Modal from 'react-modal';
+import {setContest} from "../../utils/store/contestSlice.ts";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
@@ -164,14 +165,14 @@ const CreateContest = (): ReactElement => {
             }));
         }
 
-        const contest = {
-            problems: problems,
-            teams: teams,
-            teamStatus: teamsStatus,
-            teamResults: []
-        };
+        // Create the contest with default values
+        dispatch(setContest({
+            name: "Contest",
+            durationMinutes: 180,
+            frozenMinutes: 60
+        }));
 
-        navigate("/scoreboard", { state: { contest: contest } });
+        navigate("/scoreboard");
     };
 
     return (
