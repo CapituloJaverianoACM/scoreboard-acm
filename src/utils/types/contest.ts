@@ -12,7 +12,7 @@ type TeamResult = {
     problem: Problem,
     tries: number,
     acceptedMinute: number,
-    status: "SOLVED" | "AC" | "PENDING" | "WA"
+    status: "SOLVED" | "AC" | "PENDING" | "WA" | "TLE"
 }
 
 type TeamStatus = {
