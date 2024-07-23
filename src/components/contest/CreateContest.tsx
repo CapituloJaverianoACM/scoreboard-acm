@@ -208,7 +208,7 @@ const CreateContest = (): ReactElement => {
         problems.forEach(problem => dispatch(addProblem(problem)));
         teams.forEach(team => dispatch(addTeam(team)));
 
-        // TODO: Create new tab with window - Modify this line to the route of the judgepadge
+        // Redirect to /judge if it is not possible to navigate to the main page
         if (navigate("/judge", { replace: true }) === undefined) {
             navigate("/", { replace: true });
         }
@@ -245,30 +245,30 @@ const CreateContest = (): ReactElement => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-16 w-full px-12">
+            <div className="grid grid-cols-2 gap-8 w-full px-12">
                 <div>
                     <h2 className="text-2xl mb-2">Problems List</h2>
-                    <ul className="max-h-[50vh] overflow-y-auto grid grid-cols-2 gap-4">
+                    <ul className="max-h-[42vh] overflow-y-auto grid grid-cols-2 gap-4">
                         {problems.map((problem, index) => (
                             <li key={index} className="bg-gray-800 p-2 rounded mb-2">
                                 {problem.letter}: {problem.name}
                             </li>
                         ))}
                     </ul>
-                    <button onClick={openModalProblem} className="p-2 bg-blue-500 rounded text-white mt-4">
+                    <button onClick={openModalProblem} className="p-2 bg-[#0b8bc29f] rounded text-white mt-4">
                         Add Problem
                     </button>
                 </div>
                 <div>
                     <h2 className="text-2xl mb-2">Teams List</h2>
-                    <ul className="max-h-[50vh] overflow-y-auto grid grid-cols-2 gap-4">
+                    <ul className="max-h-[42vh] overflow-y-auto grid grid-cols-2 gap-4">
                         {teams.map((team, index) => (
                             <li key={index} className="bg-gray-800 p-2 rounded mb-2">
                                 {team.shortName}: {team.name}
                             </li>
                         ))}
                     </ul>
-                    <button onClick={openModalTeam} className="p-2 bg-blue-500 rounded text-white mt-4">
+                    <button onClick={openModalTeam} className="p-2 bg-[#0b8bc29f] rounded text-white mt-4">
                         Add Team
                     </button>
                 </div>
@@ -364,7 +364,7 @@ const CreateContest = (): ReactElement => {
 
             <button
                 onClick={handleCreateContest}
-                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md mt-12 transition duration-300 ease-in-out transform hover:scale-105"
+                className="px-8 py-3 bg-[#0b8bc29f] hover:bg-[#0b8bc29f] text-white font-semibold rounded-lg shadow-md mt-12 transition duration-300 ease-in-out transform hover:scale-105"
             >
                 Create Contest
             </button>
