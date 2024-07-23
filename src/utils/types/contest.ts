@@ -22,10 +22,9 @@ type TeamStatus = {
 }
 
 type Contest = {
-    problems: Problem[],
-    teams: Team[],
-    teamStatus: TeamStatus[],
-    teamResults: TeamResult[]
+    name : string,
+    durationMinutes : number,
+    frozenMinutes : number,
 }
 
 export type { Contest, Team, Problem, TeamResult, TeamStatus }
