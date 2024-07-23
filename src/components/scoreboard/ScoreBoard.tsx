@@ -19,9 +19,9 @@ const ScoreBoard = () : ReactElement => {
             {/* Contest data */}
             <div className="flex felx-row space-x-8 p-9 h-[200px] w-[1000px]">
                 <div className="flex flex-col space-y-3 w-[50%] rounded-md">
-                    <h1 className="text-4xl font-bold text-white"> Contest name </h1>
-                    <h1 className="text-2xl text-white"> July 2024 </h1>
-                    <h1 className="text-2xl text-white"> Duration: 2 hours </h1>
+                    <h1 className="text-4xl font-bold text-white"> Name: {contest.name}</h1>
+                    <h1 className="text-2xl text-white"> Duration: {contest.durationMinutes} </h1>
+                    <h1 className="text-2xl text-white"> Frozen time before end: {contest.frozenMinutes} </h1>
                 </div>
                 <div className="w-[50%] bg-[#ffffff70] rounded-md">
                     { /* TODO: Timer */ }
