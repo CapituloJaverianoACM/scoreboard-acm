@@ -16,7 +16,10 @@ const teamSlice = createSlice({
         addTeam: (state, action) => {
             state.value.push(action.payload);
         },
+        clearTeams : (state) => {
+            state.value = [];
+        }
     },
 });
-export const {addTeam} = teamSlice.actions;
+export const {addTeam, clearTeams} = teamSlice.actions;
 export default teamSlice.reducer;

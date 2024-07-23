@@ -6,7 +6,7 @@ import TeamRow from "./(team)/TeamRow.tsx";
 import {useLocation} from "react-router-dom";
 const ScoreBoard = () : ReactElement => {
 
-    const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
+     const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
     // console.log(`Este es el tam ${resultsList.length}`)
     const location = useLocation();
     const contest = useSelector((state : any) => state.contest.value);

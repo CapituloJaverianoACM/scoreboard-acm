@@ -1,19 +1,19 @@
 import React, { ReactElement, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addProblem } from "../../utils/store/problemSlice";
+import { useDispatch } from "react-redux";
+import {addProblem, clearProblems} from "../../utils/store/problemSlice";
 import { Problem, Team } from "../../utils/types/contest";
-import { addTeam } from "../../utils/store/teamSlice.ts";
+import {addTeam, clearTeams} from "../../utils/store/teamSlice";
 import { useNavigate } from "react-router-dom";
-import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice.ts";
+import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice";
 import Modal from 'react-modal';
-import {setContest} from "../../utils/store/contestSlice.ts";
+import { setContest } from "../../utils/store/contestSlice";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const teams: Team[] = useSelector((state: any) => state.teams.value);
-    const problems: Problem[] = useSelector((state: any) => state.problems.value);
+    const [teams, setTeams] = useState<Team[]>([]);
+    const [problems, setProblems] = useState<Problem[]>([]);
 
     const [problemLetter, setProblemLetter] = useState<string>("");
     const [problemName, setProblemName] = useState<string>("");
@@ -26,11 +26,11 @@ const CreateContest = (): ReactElement => {
     const [modalProblemIsOpen, setModalProblemIsOpen] = useState(false);
     const [modalTeamIsOpen, setModalTeamIsOpen] = useState(false);
 
-    // New state variables for contest details
     const [contestName, setContestName] = useState<string>("");
     const [contestDuration, setContestDuration] = useState<string>("");
     const [contestFrozenTime, setContestFrozenTime] = useState<string>("");
     const [errorContestData, setErrorContestData] = useState<string>("");
+
     const handleContestNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setContestName(e.target.value);
     };
@@ -63,7 +63,7 @@ const CreateContest = (): ReactElement => {
             letter: problemLetter,
             name: problemName,
         };
-        dispatch(addProblem(problem));
+        setProblems([...problems, problem]);
         setProblemLetter("");
         setProblemName("");
         setErrorMessageProblem("");
@@ -80,15 +80,13 @@ const CreateContest = (): ReactElement => {
     };
 
     const closeModalAddProblem = () => {
-        if (!validateProblemLetter(problemLetter)){
+        if (!validateProblemLetter(problemLetter)) {
             setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
             return;
-        }
-        else if (problemName.length <= 0) {
+        } else if (problemName.length <= 0) {
             setErrorMessageProblem("Problem name is required");
             return;
-        }
-        else{
+        } else {
             handleAddProblem();
             setModalProblemIsOpen(false);
         }
@@ -111,12 +109,11 @@ const CreateContest = (): ReactElement => {
             shortName: teamShortName,
             name: teamName,
         };
-        dispatch(addTeam(team));
+        setTeams([...teams, team]);
         setTeamShortName("");
         setTeamName("");
         setErrorMessageTeam("");
     };
-
 
     const openModalTeam = () => {
         setModalTeamIsOpen(true);
@@ -131,20 +128,14 @@ const CreateContest = (): ReactElement => {
             setErrorMessageTeam("Team name is required");
         } else if (teamNameExists(teamName)) {
             setErrorMessageTeam("Team name already exists");
-        }
-        else{
-            handleCreateTeam()
+        } else {
+            handleCreateTeam();
             setModalTeamIsOpen(false);
         }
     };
 
     function teamNameExists(teamName: string): boolean {
-        for (let i = 0; i < teams.length; i++) {
-            if (teams[i].name === teamName) {
-                return true;
-            }
-        }
-        return false;
+        return teams.some(team => team.name === teamName);
     }
 
     const closeModalWithoutAddTeam = () => {
@@ -155,10 +146,6 @@ const CreateContest = (): ReactElement => {
         setTeamName("");
         setTeamShortName("");
         setErrorMessageTeam("");
-    };
-
-    const clearLocalStorage = () => {
-        localStorage.clear();
     };
 
     const handleContestValidations = () => {
@@ -187,41 +174,46 @@ const CreateContest = (): ReactElement => {
             return false;
         }
         return true;
-    }
+    };
 
     const handleCreateContest = () => {
+        // Delete all the previous data from the store
+        dispatch(clearTeams());
+        dispatch(clearProblems());
+
         if (!handleContestValidations()) {
             return;
         }
         dispatch(clearTeamStatus());
-        for (let i = 0; i < teams.length; i++) {
-            const team = teams[i];
-            const results = [];
-            for (let j = 0; j < problems.length; j++) {
-                results.push({
-                    problem: problems[j],
-                    tries: 0,
-                    acceptedMinute: 0,
-                    status: "AC"
-                });
-            }
+        for (const team of teams) {
+            const results = problems.map(problem => ({
+                problem,
+                tries: 0,
+                acceptedMinute: 0,
+                status: "AC"
+            }));
             dispatch(addTeamStatus({
-                team: team,
-                results: results,
+                team,
+                results,
                 penalty: 0
             }));
         }
 
-        // Create the contest with provided values
         dispatch(setContest({
             name: contestName,
             durationMinutes: parseInt(contestDuration),
             frozenMinutes: parseInt(contestFrozenTime),
         }));
 
-        navigate("/scoreboard");
-        // TODO Create new tab with window - Modify this line to the route of the judgepadge
-        //window.open("/judgepadge", "_blank");
+        problems.forEach(problem => dispatch(addProblem(problem)));
+        teams.forEach(team => dispatch(addTeam(team)));
+
+        // TODO: Create new tab with window - Modify this line to the route of the judgepadge
+        if (navigate("/judge", { replace: true }) === undefined) {
+            navigate("/", { replace: true });
+        }
+
+        window.open("/scoreboard", "_blank");
     };
 
     return (
@@ -253,10 +245,10 @@ const CreateContest = (): ReactElement => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 w-full px-12">
+            <div className="grid grid-cols-2 gap-16 w-full px-12">
                 <div>
                     <h2 className="text-2xl mb-2">Problems List</h2>
-                    <ul className="max-h-[50vh] overflow-y-auto">
+                    <ul className="max-h-[50vh] overflow-y-auto grid grid-cols-2 gap-4">
                         {problems.map((problem, index) => (
                             <li key={index} className="bg-gray-800 p-2 rounded mb-2">
                                 {problem.letter}: {problem.name}
@@ -269,7 +261,7 @@ const CreateContest = (): ReactElement => {
                 </div>
                 <div>
                     <h2 className="text-2xl mb-2">Teams List</h2>
-                    <ul className="max-h-[50vh] overflow-y-auto">
+                    <ul className="max-h-[50vh] overflow-y-auto grid grid-cols-2 gap-4">
                         {teams.map((team, index) => (
                             <li key={index} className="bg-gray-800 p-2 rounded mb-2">
                                 {team.shortName}: {team.name}
@@ -370,12 +362,15 @@ const CreateContest = (): ReactElement => {
                 </div>
             </Modal>
 
-            <button onClick={handleCreateContest} className="p-2 bg-blue-500 rounded text-white mt-12">
+            <button
+                onClick={handleCreateContest}
+                className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md mt-12 transition duration-300 ease-in-out transform hover:scale-105"
+            >
                 Create Contest
             </button>
 
             {errorContestData && (
-                <p className="text-red-300">{errorContestData}</p>
+                <p className="text-red-200 mt-4">{errorContestData}</p>
             )}
         </div>
     );
