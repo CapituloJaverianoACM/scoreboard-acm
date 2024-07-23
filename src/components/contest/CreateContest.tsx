@@ -1,7 +1,7 @@
 import React, { ReactElement, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProblem } from "../../utils/store/problemSlice";
-import { Problem, Team, TeamStatus } from "../../utils/types/contest";
+import { Problem, Team } from "../../utils/types/contest";
 import { addTeam } from "../../utils/store/teamSlice.ts";
 import { useNavigate } from "react-router-dom";
 import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice.ts";
@@ -14,7 +14,6 @@ const CreateContest = (): ReactElement => {
 
     const teams: Team[] = useSelector((state: any) => state.teams.value);
     const problems: Problem[] = useSelector((state: any) => state.problems.value);
-    const teamsStatus: TeamStatus[] = useSelector((state: any) => state.teamStatus.value);
 
     const [problemLetter, setProblemLetter] = useState<string>("");
     const [problemName, setProblemName] = useState<string>("");
@@ -26,6 +25,23 @@ const CreateContest = (): ReactElement => {
 
     const [modalProblemIsOpen, setModalProblemIsOpen] = useState(false);
     const [modalTeamIsOpen, setModalTeamIsOpen] = useState(false);
+
+    // New state variables for contest details
+    const [contestName, setContestName] = useState<string>("");
+    const [contestDuration, setContestDuration] = useState<string>("");
+    const [contestFrozenTime, setContestFrozenTime] = useState<string>("");
+    const [errorContestData, setErrorContestData] = useState<string>("");
+    const handleContestNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setContestName(e.target.value);
+    };
+
+    const handleContestDurationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setContestDuration(e.target.value);
+    };
+
+    const handleContestFrozenTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setContestFrozenTime(e.target.value);
+    };
 
     const handleLetterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setProblemLetter(e.target.value);
@@ -145,7 +161,38 @@ const CreateContest = (): ReactElement => {
         localStorage.clear();
     };
 
+    const handleContestValidations = () => {
+        if (contestName.length <= 0) {
+            setErrorContestData("Contest name is required");
+            return false;
+        }
+        if (contestDuration.length <= 0 || parseInt(contestDuration) <= 0) {
+            setErrorContestData("Contest duration must be greater than 0");
+            return false;
+        }
+        if (contestFrozenTime.length <= 0 || parseInt(contestFrozenTime) <= 0) {
+            setErrorContestData("Contest frozen time must be greater than 0");
+            return false;
+        }
+        if (parseInt(contestDuration) <= parseInt(contestFrozenTime)) {
+            setErrorContestData("Frozen time must be less than contest duration");
+            return false;
+        }
+        if (problems.length === 0) {
+            setErrorContestData("At least one problem is required");
+            return false;
+        }
+        if (teams.length === 0) {
+            setErrorContestData("At least one team is required");
+            return false;
+        }
+        return true;
+    }
+
     const handleCreateContest = () => {
+        if (!handleContestValidations()) {
+            return;
+        }
         dispatch(clearTeamStatus());
         for (let i = 0; i < teams.length; i++) {
             const team = teams[i];
@@ -165,140 +212,172 @@ const CreateContest = (): ReactElement => {
             }));
         }
 
-        // Create the contest with default values
+        // Create the contest with provided values
         dispatch(setContest({
-            name: "Contest",
-            durationMinutes: 180,
-            frozenMinutes: 60
+            name: contestName,
+            durationMinutes: parseInt(contestDuration),
+            frozenMinutes: parseInt(contestFrozenTime),
         }));
 
         navigate("/scoreboard");
+        // TODO Create new tab with window - Modify this line to the route of the judgepadge
+        //window.open("/judgepadge", "_blank");
     };
 
     return (
+        <div className="flex-grow flex flex-col justify-center items-center text-white mt-12">
+            <div className="w-full px-12 mb-8">
+                <h2 className="text-2xl mb-4">Create Contest</h2>
+                <div className="grid grid-cols-3 gap-4">
+                    <input
+                        type="text"
+                        placeholder="Contest Name"
+                        className="p-2 bg-gray-200 text-black border border-gray-400 rounded"
+                        value={contestName}
+                        onChange={handleContestNameChange}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Duration of contest (Minutes)"
+                        className="p-2 bg-gray-200 text-black border border-gray-400 rounded"
+                        value={contestDuration}
+                        onChange={handleContestDurationChange}
+                    />
+                    <input
+                        type="number"
+                        placeholder="Frozen Time before end (Minutes)"
+                        className="p-2 bg-gray-200 text-black border border-gray-400 rounded"
+                        value={contestFrozenTime}
+                        onChange={handleContestFrozenTimeChange}
+                    />
+                </div>
+            </div>
 
-            <div className="flex-grow flex flex-col justify-center items-center text-white mt-12">
-                <div className="grid grid-cols-2 gap-4 w-full px-12">
-                    <div>
-                        <h2 className="text-2xl mb-2">Problems List</h2>
-                        <ul className="max-h-[50vh] overflow-y-auto">
-                            {problems.map((problem, index) => (
-                                <li key={index} className="bg-gray-800 p-2 rounded mb-2">
-                                    {problem.letter}: {problem.name}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={openModalProblem} className="p-2 bg-blue-500 rounded text-white mt-4">
+            <div className="grid grid-cols-2 gap-4 w-full px-12">
+                <div>
+                    <h2 className="text-2xl mb-2">Problems List</h2>
+                    <ul className="max-h-[50vh] overflow-y-auto">
+                        {problems.map((problem, index) => (
+                            <li key={index} className="bg-gray-800 p-2 rounded mb-2">
+                                {problem.letter}: {problem.name}
+                            </li>
+                        ))}
+                    </ul>
+                    <button onClick={openModalProblem} className="p-2 bg-blue-500 rounded text-white mt-4">
+                        Add Problem
+                    </button>
+                </div>
+                <div>
+                    <h2 className="text-2xl mb-2">Teams List</h2>
+                    <ul className="max-h-[50vh] overflow-y-auto">
+                        {teams.map((team, index) => (
+                            <li key={index} className="bg-gray-800 p-2 rounded mb-2">
+                                {team.shortName}: {team.name}
+                            </li>
+                        ))}
+                    </ul>
+                    <button onClick={openModalTeam} className="p-2 bg-blue-500 rounded text-white mt-4">
+                        Add Team
+                    </button>
+                </div>
+            </div>
+
+            <Modal
+                isOpen={modalProblemIsOpen}
+                onAfterOpen={afterOpenModalProblem}
+                onRequestClose={closeModalAddProblem}
+                contentLabel="Add Problem Modal"
+                className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+            >
+                <div className="flex flex-col items-center mt-4 w-full">
+                    <h2 className="text-2xl mb-2 text-white">Enter the details of the problem.</h2>
+                    <input
+                        type="text"
+                        placeholder="Problem Letter"
+                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                        value={problemLetter}
+                        onChange={handleLetterChange}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Problem Name"
+                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                        value={problemName}
+                        onChange={handleNameChange}
+                    />
+                    {errorMessageProblem && (
+                        <p className="text-red-300">{errorMessageProblem}</p>
+                    )}
+                    <div className="flex space-x-2 w-full justify-center mt-8">
+                        <button
+                            onClick={closeModalAddProblem}
+                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                        >
                             Add Problem
                         </button>
-                    </div>
-                    <div>
-                        <h2 className="text-2xl mb-2">Teams List</h2>
-                        <ul className="max-h-[50vh] overflow-y-auto">
-                            {teams.map((team, index) => (
-                                <li key={index} className="bg-gray-800 p-2 rounded mb-2">
-                                    {team.shortName}: {team.name}
-                                </li>
-                            ))}
-                        </ul>
-                        <button onClick={openModalTeam} className="p-2 bg-blue-500 rounded text-white mt-4">
-                            Add Team
+                        <button
+                            onClick={closeModalWithoutAddProblem}
+                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                        >
+                            Back
                         </button>
                     </div>
                 </div>
+            </Modal>
 
-                <Modal
-                    isOpen={modalProblemIsOpen}
-                    onAfterOpen={afterOpenModalProblem}
-                    onRequestClose={closeModalAddProblem}
-                    contentLabel="Add Problem Modal"
-                    className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-                >
-                    <div className="flex flex-col items-center mt-4 w-full">
-                        <h2 className="text-2xl mb-2 text-white">Enter the details of the problem.</h2>
-                        <input
-                            type="text"
-                            placeholder="Problem Letter"
-                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                            value={problemLetter}
-                            onChange={handleLetterChange}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Problem Name"
-                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                            value={problemName}
-                            onChange={handleNameChange}
-                        />
-                        {errorMessageProblem && (
-                            <p className="text-red-300">{errorMessageProblem}</p>
-                        )}
-                        <div className="flex space-x-2 w-full justify-center mt-8">
-                            <button
-                                onClick={closeModalAddProblem}
-                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                            >
-                                Add Problem
-                            </button>
-                            <button
-                                onClick={closeModalWithoutAddProblem}
-                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                            >
-                                Back
-                            </button>
-                        </div>
+            <Modal
+                isOpen={modalTeamIsOpen}
+                onAfterOpen={afterOpenModalTeam}
+                onRequestClose={closeModalAddTeam}
+                contentLabel="Add Team Modal"
+                className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
+                overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+            >
+                <div className="flex flex-col items-center mt-4 w-full">
+                    <h2 className="text-2xl mb-2 text-white">Enter the details of the team.</h2>
+                    <input
+                        type="text"
+                        placeholder="Team Short Name"
+                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                        value={teamShortName}
+                        onChange={handleTeamShortNameChange}
+                    />
+                    <input
+                        type="text"
+                        placeholder="Team Name"
+                        className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
+                        value={teamName}
+                        onChange={handleTeamNameChange}
+                    />
+                    {errorMessageTeam && (
+                        <p className="text-red-300">{errorMessageTeam}</p>
+                    )}
+                    <div className="flex space-x-2 w-full justify-center mt-8">
+                        <button
+                            onClick={closeModalAddTeam}
+                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                        >
+                            Add Team
+                        </button>
+                        <button
+                            onClick={closeModalWithoutAddTeam}
+                            className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
+                        >
+                            Back
+                        </button>
                     </div>
-                </Modal>
+                </div>
+            </Modal>
 
-                <Modal
-                    isOpen={modalTeamIsOpen}
-                    onAfterOpen={afterOpenModalTeam}
-                    onRequestClose={closeModalAddTeam}
-                    contentLabel="Add Team Modal"
-                    className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
-                    overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-                >
-                    <div className="flex flex-col items-center mt-4 w-full">
-                        <h2 className="text-2xl mb-2 text-white">Enter the details of the team.</h2>
-                        <input
-                            type="text"
-                            placeholder="Team Short Name"
-                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                            value={teamShortName}
-                            onChange={handleTeamShortNameChange}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Team Name"
-                            className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
-                            value={teamName}
-                            onChange={handleTeamNameChange}
-                        />
-                        {errorMessageTeam && (
-                            <p className="text-red-300">{errorMessageTeam}</p>
-                        )}
-                        <div className="flex space-x-2 w-full justify-center mt-8">
-                            <button
-                                onClick={closeModalAddTeam}
-                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                            >
-                                Add Team
-                            </button>
-                            <button
-                                onClick={closeModalWithoutAddTeam}
-                                className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
-                            >
-                                Back
-                            </button>
-                        </div>
-                    </div>
-                </Modal>
+            <button onClick={handleCreateContest} className="p-2 bg-blue-500 rounded text-white mt-12">
+                Create Contest
+            </button>
 
-                <button onClick={handleCreateContest} className="p-2 bg-blue-500 rounded text-white mt-12">
-                    Create Contest
-                </button>
-            </div>
+            {errorContestData && (
+                <p className="text-red-300">{errorContestData}</p>
+            )}
+        </div>
     );
 };
 
