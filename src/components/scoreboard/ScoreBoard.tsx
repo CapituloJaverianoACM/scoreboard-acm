@@ -1,18 +1,58 @@
-import {ReactElement} from "react";
-import {useSelector} from "react-redux";
-import ScoreboardMessage from "../../utils/types/scoreboard.ts";
-import {Contest, Problem, TeamStatus} from "../../utils/types/contest.ts";
+import {ReactElement, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import ScoreboardMessage, { TeamSubmission } from "../../utils/types/scoreboard.ts";
+import { Problem, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
-import {useLocation} from "react-router-dom";
+import { addSubmission } from "../../utils/store/teamStatusSlice.ts";
+import { addResult } from "../../utils/store/resultsSlice.ts";
 const ScoreBoard = () : ReactElement => {
+    const dispatch = useDispatch();
 
-     const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
-    // console.log(`Este es el tam ${resultsList.length}`)
-    const location = useLocation();
+    const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
     const contest = useSelector((state : any) => state.contest.value);
-    console.log(contest);
     const teams : TeamStatus[] = useSelector((state : any) => state.teamStatus.value);
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
+
+
+    // States for the component
+    const [teamsStatus, setTeamsStatus] = useState(teams);
+    const [freezed, setFreezed] = useState(false);
+    const [lastRendered, setLastRendered] = useState(0);
+    const [lastChecked, setLastChecked] = useState(0);
+
+    // Listen to changes in the results list
+    useEffect(() => {
+        if(resultsList.length === 0) return;
+        const submission : TeamSubmission = resultsList[lastChecked].payload as TeamSubmission
+        if(freezed){
+            // update teamsStatus with the problem submission state to pending
+            setTeamsStatus(teamsStatus.map((team) => {
+                if(team.team.name === submission.teamName){
+                    team.results = team.results.map((result) => {
+                        if(result.problem.letter === submission.problemLetter){
+                            result.status = "PENDING";
+                        }
+                        return result;
+                    })
+                }
+                return team;
+            }));
+            setLastChecked(lastChecked + 1);
+            return;
+        };
+        switch(resultsList[lastRendered].type){
+            case "SUBMISSION":
+                dispatch(addSubmission(submission));
+                break;
+            case "TIME_FREEZE":
+                setFreezed(true); // Freeze the scoreboard
+                break;
+            case "REVELATOR":
+                break;
+        }
+        setLastRendered(lastRendered + 1);
+        setLastChecked(lastChecked + 1);
+    }, [resultsList]);
 
     return (
         <div className="pl-10">

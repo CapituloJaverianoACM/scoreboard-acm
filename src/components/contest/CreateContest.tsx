@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice";
 import Modal from 'react-modal';
 import { setContest } from "../../utils/store/contestSlice";
+import { clearResult } from "../../utils/store/resultsSlice";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
@@ -185,6 +186,7 @@ const CreateContest = (): ReactElement => {
             return;
         }
         dispatch(clearTeamStatus());
+        dispatch(clearResult());
         for (const team of teams) {
             const results = problems.map(problem => ({
                 problem,
