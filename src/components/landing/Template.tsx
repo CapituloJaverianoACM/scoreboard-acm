@@ -6,7 +6,9 @@ const Template = (props) : ReactElement => {
     return (
         <div className="text-white">
             <Header />
-            {props.children}
+            <div className="mt-[100px]">
+                {props.children}
+            </div>
             <Footer />
         </div>
     );

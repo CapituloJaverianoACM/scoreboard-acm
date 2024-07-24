@@ -14,7 +14,7 @@ const Landing = () : ReactElement => {
     return (
         <div className="text-white">
             <div className="relative h-[85vh] flex justify-evenly items-center text-white">
-                <Spline scene="https://draft.spline.design/Z9xDmSaonQHEy5U0/scene.splinecode"/>
+                <Spline scene="https://draft.spline.design/fS43AqSAAaZwizXI/scene.splinecode"/>
                 <div data-aos="fade-left" data-aos-duration="700"  className="text-white text-4xl absolute translate-x-6 top-[30%] right-[45%]  text-center p-10">
                     <div className="flex flex-col justify-center items-center gap-5">
                         <h1>Create your contest scoreboard</h1>

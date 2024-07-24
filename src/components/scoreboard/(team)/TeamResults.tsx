@@ -7,7 +7,7 @@ const TeamResults = (prop : { result : TeamResult }): ReactElement => {
     switch (result.status) {
         case "AC":
             return (
-                <div className={`${baseClasses} border-black text-black`}>
+                <div className={`${baseClasses} border-white text-white`}>
                     -
                 </div>
             );
