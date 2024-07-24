@@ -208,10 +208,8 @@ const CreateContest = (): ReactElement => {
         problems.forEach(problem => dispatch(addProblem(problem)));
         teams.forEach(team => dispatch(addTeam(team)));
 
-        // Redirect to /judge if it is not possible to navigate to the main page
-        if (navigate("/judge", { replace: true }) === undefined) {
-            navigate("/", { replace: true });
-        }
+        // Redirect to /judge
+        navigate("/judge");
 
         window.open("/scoreboard", "_blank");
     };
