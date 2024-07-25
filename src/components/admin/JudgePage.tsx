@@ -1,48 +1,83 @@
-import {ReactElement, useState} from "react";
-import { useSelector } from "react-redux";
+import {ReactElement, useEffect, useState} from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { PlusIcon } from "@heroicons/react/20/solid";
 import Timer from "../scoreboard/Timer";
 import { useTimer } from 'react-timer-hook';
 import { useNavigate } from "react-router-dom";
+import { pauseTimer, resetTimer, resumeTimer, setTimer, startTimer } from "../../utils/store/timerSlice";
 
 
 const JudgePage = () : ReactElement => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
+    const { isRunning } = useSelector((state: any) => state.timer);
+    const contestData = useSelector((state: any ) => state.contest.value);
+
+    const expiryTimestamp = new Date();
+    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + contestData.durationMinutes * 60); 
+    
     const [firstTime, setFirstTime] = useState(true);
 
-    // Obtenemos el estado del contest y del timer
-    const contestData = useSelector((state: any ) => state.contest.value);
-    const timerState = useSelector((state: any ) => state.contest.timerState);
+    // Obtenemos el estado del contest
 
-    // const expiry = new Date();
-    // expiry.setSeconds(expiry.getSeconds() + contestData.durationMinutes * 60);
+    const expiry = new Date();
+    expiry.setSeconds(expiry.getSeconds() + contestData.durationMinutes * 60);
 
     const {
-        seconds,
-        minutes,
-        hours,
-        isRunning,
+        seconds: timerSeconds,
+        minutes: timerMinutes,
+        hours: timerHours,
+        isRunning: timerIsRunning,
         start,
         pause,
         resume,
         restart,
     } = useTimer({ 
-        expiryTimestamp:  timerState.expiryTimestamp, 
+        expiryTimestamp, 
         onExpire: () => alert('El contest ha finalizado'),
         autoStart: false 
     });
+
+    useEffect(() => {
+        if (isRunning && !timerIsRunning) {
+            resume();
+        } else if (!isRunning && timerIsRunning) {
+            pause();
+        }
+    }, [isRunning, timerIsRunning, resume, pause]);
+    
+    useEffect(() => {
+        dispatch(setTimer({ seconds: timerSeconds, minutes: timerMinutes, hours: timerHours }));
+    }, [timerSeconds, timerMinutes, timerHours, dispatch]);
+    
+    const handleStart = () => {
+        dispatch(startTimer());
+        start();
+        setFirstTime(false);
+    };
+
+    const handleResume = () => {
+        dispatch(resumeTimer());
+        resume();
+    };
+    
+    const handlePause = () => {
+        dispatch(pauseTimer());
+        pause();
+    };
+    
+    const handleReset = () => {
+        dispatch(resetTimer());              
+        restart(expiryTimestamp, false);
+        setFirstTime(true);
+    };
 
     return (
         <div className="text-white flex items-center justify-center h-[100vh] w-full px-20">
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
                 <div>
-                    <Timer 
-                        hours={hours}
-                        minutes={minutes}
-                        seconds={seconds}
-                        isRunning={isRunning} 
-                    />
+                    <Timer />
                 </div>
                 <div className="flex-1">
                     <p>Recent Submissions</p>
@@ -52,22 +87,14 @@ const JudgePage = () : ReactElement => {
                 <div className="flex flex-col gap-3 h-[35vh] justify-center">
                     <button 
                         onClick={
-                            isRunning ? pause : firstTime ? () => {
-                                start()
-                                setFirstTime(false)
-                            } : resume
+                            isRunning ? handlePause : firstTime ? handleStart : handleResume
                         }
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
                         {isRunning ? 'Pausar contest' : firstTime ? 'Iniciar contest' : 'Reanudar contest'}
                     </button>
                     <button 
-                        onClick={() => {
-                            const time = new Date();
-                            time.setSeconds(time.getSeconds() + contestData.durationMinutes * 60);
-                            restart(time, false);
-                            setFirstTime(true);
-                        }}
+                        onClick={handleReset}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
                         Reiniciar contest

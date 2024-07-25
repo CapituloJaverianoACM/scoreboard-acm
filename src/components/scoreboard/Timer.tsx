@@ -1,11 +1,8 @@
-interface MyTimerProps {
-    hours: number;
-    minutes: number;
-    seconds: number;
-    isRunning: boolean;
-}
+import { useSelector } from 'react-redux';
 
-const Timer: React.FC<MyTimerProps> = ({ hours, minutes, seconds, isRunning })=> {
+const Timer: React.FC = ()=> {
+    const { seconds, minutes, hours, isRunning } = useSelector((state: any) => state.timer);
+
     return (
         <div className="flex flex-col items-center justify-center w-[30vw] h-[35vh] text-center border-2 border-white rounded-lg p-10">
             <p>Tiempo restante:</p>

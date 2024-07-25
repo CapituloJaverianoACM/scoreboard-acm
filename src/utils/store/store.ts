@@ -8,6 +8,7 @@ import problemReducer from './problemSlice';
 import teamReducer from './teamSlice';
 import teamStatusReducer from './teamStatusSlice';
 import contestReducer from './contestSlice';
+import timerReducer from './timerSlice';
 
 const persistConfig = {
     key: 'root',
@@ -20,6 +21,7 @@ const rootReducer = combineReducers({
     teams : teamReducer,
     teamStatus : teamStatusReducer,
     contest : contestReducer,
+    timer: timerReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
