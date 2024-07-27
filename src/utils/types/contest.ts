@@ -21,10 +21,16 @@ type TeamStatus = {
     penalty: number
 }
 
+type TeamSubmission = {
+    teamName: string,
+    veredict: "WA" | "CORRECT" | "TLE",
+    minutes: number
+}
+
 type Contest = {
     name : string,
     durationMinutes : number,
     frozenMinutes : number,
 }
 
-export type { Contest, Team, Problem, TeamResult, TeamStatus }
+export type { Contest, Team, Problem, TeamResult, TeamStatus, TeamSubmission }
