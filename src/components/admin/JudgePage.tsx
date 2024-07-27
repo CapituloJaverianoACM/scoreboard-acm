@@ -17,7 +17,7 @@ const JudgePage = () : ReactElement => {
     const expiryTimestamp = new Date();
     expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + contestData.durationMinutes * 60); 
     
-    const [firstTime, setFirstTime] = useState(true);
+    const [initialStateTimer, setInitialStateTimer] = useState(true);
 
     // Obtenemos el estado del contest
 
@@ -39,13 +39,13 @@ const JudgePage = () : ReactElement => {
         autoStart: false 
     });
 
-    useEffect(() => {
-        if (isRunning && !timerIsRunning) {
-            resume();
-        } else if (!isRunning && timerIsRunning) {
-            pause();
-        }
-    }, [isRunning, timerIsRunning, resume, pause]);
+    // useEffect(() => {
+    //     if (isRunning && !timerIsRunning) {
+    //         resume();
+    //     } else if (!isRunning && timerIsRunning) {
+    //         pause();
+    //     }
+    // }, [isRunning, timerIsRunning, resume, pause]);
     
     useEffect(() => {
         dispatch(setTimer({ seconds: timerSeconds, minutes: timerMinutes, hours: timerHours }));
@@ -54,7 +54,7 @@ const JudgePage = () : ReactElement => {
     const handleStart = () => {
         dispatch(startTimer());
         start();
-        setFirstTime(false);
+        setInitialStateTimer(false);
     };
 
     const handleResume = () => {
@@ -68,9 +68,11 @@ const JudgePage = () : ReactElement => {
     };
     
     const handleReset = () => {
-        dispatch(resetTimer());              
-        restart(expiryTimestamp, false);
-        setFirstTime(true);
+        const timeReseted = new Date();
+        timeReseted.setSeconds(timeReseted.getSeconds() + contestData.durationMinutes * 60); 
+        dispatch(resetTimer({ seconds: timeReseted.getSeconds(), minutes: timeReseted.getMinutes(), hours: timeReseted.getHours() }));
+        restart(timeReseted, false);
+        setInitialStateTimer(true);
     };
 
     return (
@@ -87,14 +89,14 @@ const JudgePage = () : ReactElement => {
                 <div className="flex flex-col gap-3 h-[35vh] justify-center">
                     <button 
                         onClick={
-                            isRunning ? handlePause : firstTime ? handleStart : handleResume
+                            isRunning ? handlePause : initialStateTimer ? handleStart : handleResume
                         }
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
-                        {isRunning ? 'Pausar contest' : firstTime ? 'Iniciar contest' : 'Reanudar contest'}
+                        {isRunning ? 'Pausar contest' : initialStateTimer ? 'Iniciar contest' : 'Reanudar contest'}
                     </button>
                     <button 
-                        onClick={handleReset}
+                        onClick={!initialStateTimer ? handleReset : () => {}}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
                         Reiniciar contest

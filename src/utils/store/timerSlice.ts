@@ -33,10 +33,11 @@ const timerSlice = createSlice({
         pauseTimer: (state) => {
             state.isRunning = false;
         },
-        resetTimer: (state) => {
-            state.seconds = 0;
-            state.minutes = 0;
-            state.hours = 0;
+        resetTimer: (state, action: PayloadAction<{ seconds: number; minutes: number; hours: number }>) => {
+            const { seconds, minutes, hours } = action.payload;
+            state.seconds = seconds;
+            state.minutes = minutes;
+            state.hours = hours;
             state.isRunning = false;
         },
     },
