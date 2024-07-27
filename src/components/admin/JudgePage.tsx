@@ -76,7 +76,7 @@ const JudgePage = () : ReactElement => {
     return (
         <div className="text-white flex items-center justify-center h-[100vh] w-full px-20">
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
-                <div>
+                <div className="w-[35vw] h-[30vh] text-center border-2 border-white rounded-lg p-10 text-8xl">
                     <Timer />
                 </div>
                 <div className="flex-1">

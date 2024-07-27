@@ -24,7 +24,7 @@ const ScoreBoard = () : ReactElement => {
                     <h1 className="text-2xl text-white"> Duration: {contest.durationMinutes} </h1>
                     <h1 className="text-2xl text-white"> Frozen time before end: {contest.frozenMinutes} </h1>
                 </div>
-                <div className="w-[50%] bg-[#ffffff70] rounded-md">
+                <div className="w-[35vw] h-full text-center border-2 border-white rounded-lg text-5xl">
                     { /* TODO: Timer */ }
                     <Timer />
                 </div>
