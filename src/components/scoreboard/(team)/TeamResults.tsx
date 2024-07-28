@@ -15,7 +15,8 @@ const TeamResults = (prop : { result : TeamResult }): ReactElement => {
             return (
                 <div className={`${baseClasses} border-green-500 text-green-500`}>
                     + {result.tries} <br></br>
-                    {result.acceptedMinute}
+                    {/* TODO: Calcular los minutos, los mismos del penalty */}
+                    {new Date(result.acceptedTimeStamp).getMinutes()}
                 </div>
             );
         case "PENDING":

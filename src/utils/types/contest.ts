@@ -11,21 +11,28 @@ type Team = {
 type TeamResult = {
     problem: Problem,
     tries: number,
-    acceptedMinute: number,
+    acceptedTimeStamp: string,
     status: "SOLVED" | "AC" | "PENDING" | "WA"
+}
+
+type Submission = {
+    team: string,
+    submission: {
+        problem: string,
+        result: string,
+        timeStamp: string,
+        isFrozen: boolean
+    }
 }
 
 type TeamStatus = {
     team: Team,
     results: TeamResult[]
-    penalty: number
+    penalty: number,
+    frozenSubmissions: Submission[],
+    problemsSolved: number
 }
 
-type TeamSubmission = {
-    teamName: string,
-    veredict: "WA" | "CORRECT" | "TLE",
-    minutes: number
-}
 
 type Contest = {
     name : string,
@@ -33,4 +40,4 @@ type Contest = {
     frozenMinutes : number,
 }
 
-export type { Contest, Team, Problem, TeamResult, TeamStatus, TeamSubmission }
+export type { Contest, Team, Problem, TeamResult, TeamStatus, Submission }

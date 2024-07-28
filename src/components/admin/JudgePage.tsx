@@ -4,24 +4,30 @@ import { PlusIcon } from "@heroicons/react/20/solid";
 import Timer from "../scoreboard/Timer";
 import { useTimer } from 'react-timer-hook';
 import { useNavigate } from "react-router-dom";
+import { addTeamResult } from "../../utils/store/teamStatusSlice.ts";
 import { pauseTimer, resetTimer, resumeTimer, setTimer, startTimer } from "../../utils/store/timerSlice";
 import Modal from 'react-modal';
+import localStorage from "redux-persist/es/storage";
+import {Problem, Submission, Team} from "../../utils/types/contest.ts";
 
 const JudgePage = () : ReactElement => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-
+    // En el Store de Team status se renderiza el scoreboard
     const { isRunning } = useSelector((state: any) => state.timer);
     const contestData = useSelector((state: any ) => state.contest.value);
+    const contestTeams = useSelector((state: any) => state.teams.value);
+    const contestProblems = useSelector((state: any) => state.problems.value);
 
     const expiryTimestamp = new Date();
     expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + contestData.durationMinutes * 60); 
     
     //Estados del componente
     const [initialStateTimer, setInitialStateTimer] = useState(true);
-
     const [modalProblemIsOpen, setModalProblemIsOpen] = useState(false);
-
+    const [veredictTeam, setVeredictTeam] = useState<Team | null>(null);
+    const [veredictProblem, setVeredictProblem] = useState<Problem | null>(null);
+    const [veredictResult, setVeredictResult] = useState<string>("")
 
     const {
         seconds: timerSeconds,
@@ -45,7 +51,15 @@ const JudgePage = () : ReactElement => {
     //         pause();
     //     }
     // }, [isRunning, timerIsRunning, resume, pause]);
-    
+
+    useEffect(() => {
+        !localStorage.getItem("contestActive").then(res => {
+            if (!res) {
+                navigate("/create");
+            }
+        })
+    }, []);
+
     useEffect(() => {
         dispatch(setTimer({ seconds: timerSeconds, minutes: timerMinutes, hours: timerHours }));
     }, [timerSeconds, timerMinutes, timerHours, dispatch]);
@@ -81,11 +95,28 @@ const JudgePage = () : ReactElement => {
         setModalProblemIsOpen(true);
     };
     const afterOpenModal = () => {
-        // setProblemLetter("");
-        // setProblemName("");
-        // setErrorMessageProblem("");
+        setVeredictResult("");
+        setVeredictTeam(null);
+        setVeredictProblem(null);
     };
     const closeModalAdd = () => {
+        console.log(veredictProblem)
+        console.log(veredictTeam)
+        console.log(veredictResult)
+
+        const teamSubmission: Submission  = {
+            team: veredictTeam!.name,
+            submission: {
+                problem: veredictProblem!.name,
+                result: veredictResult,
+                timeStamp: Date.now().toString(),
+                isFrozen: false
+            }
+        }
+
+        dispatch(addTeamResult(teamSubmission))
+        setModalProblemIsOpen(false);
+
         // if (!validateProblemLetter(problemLetter)) {
         //     setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
         //     return;
@@ -146,31 +177,50 @@ const JudgePage = () : ReactElement => {
             <Modal
                 isOpen={modalProblemIsOpen}
                 onAfterOpen={afterOpenModal}
-                onRequestClose={closeModalAdd}
+                onRequestClose={closeModalWithoutAddProblem}
+                ariaHideApp={false}
                 contentLabel="Add Verdict Modal"
                 className="w-[45%] md:w-[45%] lg:w-[25%] h-[45%] p-4 mx-auto my-8 bg-black border-4 border-white rounded-lg flex flex-col justify-center items-center"
                 overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
             >
-                <form className="flex flex-col items-center mt-4 w-full">
+                <div className="flex flex-col items-center mt-4 w-full">
                     <h2 className="text-2xl mb-2 text-white">Agregue su veredicto.</h2>
                     {/* Team */}
                     <select
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
+                        onChange={e => setVeredictTeam(contestTeams.find(t => {
+                            return t.name == e.target.value
+                        }))}
                     >
-                        <option value="" disabled selected>Select a team</option>
+                        <option value="" key={""} disabled selected>Select a team</option>
+                        {
+                            contestTeams.map(team => {
+                                return <option value={team.name} key={team.name} >[{team.shortName}] - {team.name}</option>
+                            })
+                        }
                     </select>
                     {/* Problem */}
                     <select
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
+                        onChange={e => setVeredictProblem(contestProblems.find(t => t.name == e.target.value))}
                     >
-                        <option value="" disabled selected>Select a problem</option>
+                        <option value="" key={""} disabled selected>Select a problem</option>
+                        {
+                            contestProblems.map(problem => {
+                                return <option
+                                    value={problem.name}
+                                    key={problem.name}
+                                >{problem.letter} - {problem.name}</option>
+                            })
+                        }
                     </select>
                     {/* Verdict */}
                     <select
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
+                        onChange={e => setVeredictResult(e.target.value)}
                     >
                         <option value="" disabled selected>Select a verdict</option>
                         <option value="CORRECT">Correct</option>
@@ -181,8 +231,7 @@ const JudgePage = () : ReactElement => {
                         <p className="text-red-300">{errorMessageProblem}</p>
                     )} */}
                     <div className="flex space-x-2 w-full justify-center mt-8">
-                        <button 
-                            type="submit"
+                        <button
                             onClick={closeModalAdd}
                             className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
                         >
@@ -195,7 +244,7 @@ const JudgePage = () : ReactElement => {
                             Back
                         </button>
                     </div>
-                </form>
+                </div>
             </Modal>
         </div>
     );

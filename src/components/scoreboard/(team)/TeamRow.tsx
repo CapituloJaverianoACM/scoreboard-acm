@@ -20,8 +20,8 @@ const TeamRow = (prop : { pos:number, teamStatus : TeamStatus }) : ReactElement 
                     </div>
                 </div>
                 {teamStatus.results.map((result) => {
-                    return <TeamResults result={result} />
-                })}
+                        return <TeamResults result={result} />
+                    })}
             </div>
         </div>
     );

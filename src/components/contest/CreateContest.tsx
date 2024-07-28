@@ -199,13 +199,15 @@ const CreateContest = (): ReactElement => {
             const results = problems.map(problem => ({
                 problem,
                 tries: 0,
-                acceptedMinute: 0,
-                status: "AC"
+                acceptedTimeStamp: "",
+                status: "AC",
             }));
             dispatch(addTeamStatus({
                 team,
                 results,
-                penalty: 0
+                penalty: 0,
+                frozenSubmissions: [],
+                problemsSolved: 0
             }));
         }
 
