@@ -8,19 +8,6 @@ const ScoreBoard = () : ReactElement => {
     const teams : TeamStatus[] = useSelector((state : any) => state.teamStatus.value);
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
 
-    /* Sort teams
-    useEffect(() => {
-        teams.sort((a, b) => {
-            if (a.problemsSolved != b.problemsSolved) {
-                return b.problemsSolved - a.problemsSolved;
-            }
-            if (a.penalty != b.penalty) {
-                return a.penalty - b.penalty;
-            }
-            return a.team.name.localeCompare(b.team.name);
-        });
-    }, [teams]);
-    */
     return (
         <div className="pl-10">
             {/* Contest data */}

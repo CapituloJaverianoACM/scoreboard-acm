@@ -47,6 +47,15 @@ const teamStatusSlice = createSlice({
                             teamStat => action.payload.team == teamStat.team.name)!.penalty += Math.floor(problemReceived.seconds / 60);
                 }
             }
+            state.value.sort((a, b) => {
+                if (a.problemsSolved != b.problemsSolved) {
+                    return b.problemsSolved - a.problemsSolved;
+                }
+                if (a.penalty != b.penalty) {
+                    return a.penalty - b.penalty;
+                }
+                return a.team.name.localeCompare(b.team.name);
+            });
         }
     },
 });
