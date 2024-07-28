@@ -39,14 +39,13 @@ const teamStatusSlice = createSlice({
                 problemReceived.status = (["WA", "TLE"].find(s => s == action.payload.submission.result) != null) ? "WA" : "SOLVED";
                 if (problemReceived.status == "WA") {
                     state.value.find(
-                        teamStat => action.payload.team == teamStat.team.name)!.penalty++;
+                        teamStat => action.payload.team == teamStat.team.name)!.penalty+=20;
                 } else if (problemReceived.status == "SOLVED") {
                     state.value.find(
                         teamStat => action.payload.team == teamStat.team.name)!.problemsSolved++;
-                    // TODO: Calcular la cantidad de minutos que se le agregan al penalty
-                    state.value.find(
-                        teamStat => action.payload.team == teamStat.team.name)!.penalty += 1
                 }
+                state.value.find(
+                    teamStat => action.payload.team == teamStat.team.name)!.penalty = problemReceived.tries * 20 + Math.floor(problemReceived.minutes / 60) * 20;
             }
         }
     },
