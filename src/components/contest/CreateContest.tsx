@@ -108,6 +108,15 @@ const CreateContest = (): ReactElement => {
         setTeamShortName(e.target.value);
     };
 
+    function validateTeamShortName(teamShortName: string): boolean {
+        // Validate unique team short name
+        if (teams.some(t => t.shortName === teamShortName)) {
+            setErrorMessageTeam("Team short name already exists");
+            return false;
+        }
+        return true;
+    }
+
     const handleCreateTeam = () => {
         const team: Team = {
             shortName: teamShortName,
@@ -124,7 +133,9 @@ const CreateContest = (): ReactElement => {
     };
 
     const closeModalAddTeam = () => {
-        if (teamShortName.length <= 0 && teamName.length <= 0) {
+        if (!validateTeamShortName(teamShortName)) {
+            setErrorMessageTeam("Team short name already exists");
+        } else if (teamShortName.length <= 0 && teamName.length <= 0) {
             setErrorMessageTeam("Team name and short name are required");
         } else if (teamShortName.length <= 0) {
             setErrorMessageTeam("Team short name is required");
