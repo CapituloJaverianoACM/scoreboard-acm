@@ -104,12 +104,17 @@ const JudgePage = () : ReactElement => {
         console.log(veredictTeam)
         console.log(veredictResult)
 
+        // Calculate the time of the submission since the start of the contest
+        const timeLeft = timerHours * 3600 + timerMinutes * 60 + timerSeconds;
+        const timeElapsed = Math.floor((contestData.durationMinutes * 60 - timeLeft)/60);
+
         const teamSubmission: Submission  = {
             team: veredictTeam!.name,
             submission: {
                 problem: veredictProblem!.name,
                 result: veredictResult,
-                timeStamp: Date.now().toString(),
+                minutes: timeElapsed,
+                timeStamp: timeElapsed.toString(),
                 isFrozen: false
             }
         }
