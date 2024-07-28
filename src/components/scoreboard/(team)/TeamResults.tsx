@@ -4,6 +4,8 @@ import { TeamResult } from "../../../utils/types/contest";
 const TeamResults = (prop : { result : TeamResult }): ReactElement => {
     let baseClasses = "border w-20 h-20 flex items-center justify-center text-center";
     const result = prop.result;
+    const hours = Math.floor(result.minutes / 60);
+    const minutes = result.minutes % 60;
     switch (result.status) {
         case "AC":
             return (
@@ -14,9 +16,8 @@ const TeamResults = (prop : { result : TeamResult }): ReactElement => {
         case "SOLVED":
             return (
                 <div className={`${baseClasses} border-green-500 text-green-500`}>
-                    + {result.tries} <br></br>
-                    {/* TODO: Calcular los minutos, los mismos del penalty */}
-                    {new Date(result.acceptedTimeStamp).getMinutes()}
+                    + {result.tries > 0 ? result.tries : ""} <br></br>
+                    {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}
                 </div>
             );
         case "PENDING":
@@ -26,10 +27,10 @@ const TeamResults = (prop : { result : TeamResult }): ReactElement => {
                     (0)
                 </div>
             );
-        case "WA" || "TLE":
+        case "WA":
             return (
                 <div className={`${baseClasses} border-red-500 text-red-500`}>
-                    {result.status == "WA" ? "X" : "TLE"} <br></br>
+                    WA <br></br>
                     ({result.tries})
                 </div>
             );
