@@ -119,7 +119,7 @@ const JudgePage = (): ReactElement => {
                 result: veredictResult,
                 seconds: secondsPassed,
                 timeStamp: Date.now().toString(),
-                isFrozen: false
+                isFrozen: isFrozen
             }
         }
 

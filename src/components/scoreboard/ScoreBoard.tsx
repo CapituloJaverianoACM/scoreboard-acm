@@ -1,20 +1,26 @@
-import {ReactElement, useEffect, useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import ScoreboardMessage, { TeamSubmission } from "../../utils/types/scoreboard.ts";
+import { ReactElement, useEffect } from "react";
+import { useSelector} from "react-redux";
 import { Problem, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
-import {useLocation} from "react-router-dom";
 import Timer from "./Timer.tsx";
 const ScoreBoard = () : ReactElement => {
-    const dispatch = useDispatch();
-
-     const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
-    const location = useLocation();
     const contest = useSelector((state : any) => state.contest.value);
-    console.log(contest);
     const teams : TeamStatus[] = useSelector((state : any) => state.teamStatus.value);
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
-    console.log(teams)
+
+    /* Sort teams
+    useEffect(() => {
+        teams.sort((a, b) => {
+            if (a.problemsSolved != b.problemsSolved) {
+                return b.problemsSolved - a.problemsSolved;
+            }
+            if (a.penalty != b.penalty) {
+                return a.penalty - b.penalty;
+            }
+            return a.team.name.localeCompare(b.team.name);
+        });
+    }, [teams]);
+    */
     return (
         <div className="pl-10">
             {/* Contest data */}

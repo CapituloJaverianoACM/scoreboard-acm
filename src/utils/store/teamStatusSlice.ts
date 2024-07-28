@@ -43,9 +43,9 @@ const teamStatusSlice = createSlice({
                 } else if (problemReceived.status == "SOLVED") {
                     state.value.find(
                         teamStat => action.payload.team == teamStat.team.name)!.problemsSolved++;
+                        state.value.find(
+                            teamStat => action.payload.team == teamStat.team.name)!.penalty += Math.floor(problemReceived.seconds / 60);
                 }
-                state.value.find(
-                    teamStat => action.payload.team == teamStat.team.name)!.penalty = problemReceived.tries * 20 + Math.floor(problemReceived.minutes / 60) * 20;
             }
         }
     },
