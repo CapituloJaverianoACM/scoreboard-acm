@@ -1,33 +1,47 @@
 import {ReactElement, useEffect, useState} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { PlusIcon } from "@heroicons/react/20/solid";
+import {useDispatch, useSelector} from "react-redux";
+import {PlusIcon} from "@heroicons/react/20/solid";
 import Timer from "../scoreboard/Timer";
-import { useTimer } from 'react-timer-hook';
-import { useNavigate } from "react-router-dom";
-import { addTeamResult } from "../../utils/store/teamStatusSlice.ts";
-import { pauseTimer, resetTimer, resumeTimer, setTimer, startTimer } from "../../utils/store/timerSlice";
+import {useTimer} from 'react-timer-hook';
+import {useNavigate} from "react-router-dom";
+import {addTeamResult} from "../../utils/store/teamStatusSlice.ts";
+import {pauseTimer, resetTimer, resumeTimer, setTimer, startTimer} from "../../utils/store/timerSlice";
 import Modal from 'react-modal';
-import localStorage from "redux-persist/es/storage";
 import {Problem, Submission, Team} from "../../utils/types/contest.ts";
 
-const JudgePage = () : ReactElement => {
+const JudgePage = (): ReactElement => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     // En el Store de Team status se renderiza el scoreboard
-    const { isRunning } = useSelector((state: any) => state.timer);
-    const contestData = useSelector((state: any ) => state.contest.value);
+    const {isRunning, seconds, minutes, hours, secondsPassed, isFrozen} = useSelector((state: any) => state.timer);
+    const contestData = useSelector((state: any) => state.contest.value);
     const contestTeams = useSelector((state: any) => state.teams.value);
     const contestProblems = useSelector((state: any) => state.problems.value);
-
     const expiryTimestamp = new Date();
-    expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + contestData.durationMinutes * 60); 
-    
+
     //Estados del componente
     const [initialStateTimer, setInitialStateTimer] = useState(true);
     const [modalProblemIsOpen, setModalProblemIsOpen] = useState(false);
     const [veredictTeam, setVeredictTeam] = useState<Team | null>(null);
     const [veredictProblem, setVeredictProblem] = useState<Problem | null>(null);
     const [veredictResult, setVeredictResult] = useState<string>("")
+
+    if (hours == -1) {
+        expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + contestData.durationMinutes * 60);
+    } else {
+        expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + seconds)
+        expiryTimestamp.setMinutes(expiryTimestamp.getMinutes() + minutes)
+        expiryTimestamp.setHours(expiryTimestamp.getHours()+hours)
+    }
+
+    useEffect(() => {
+        const res = localStorage.getItem("contestActive")
+        if (!res) {
+            navigate("/create");
+        }
+
+        if (hours != -1) setInitialStateTimer(false);
+    }, []);
 
     const {
         seconds: timerSeconds,
@@ -38,32 +52,22 @@ const JudgePage = () : ReactElement => {
         pause,
         resume,
         restart,
-    } = useTimer({ 
-        expiryTimestamp, 
-        onExpire: () => alert('El contest ha finalizado'),
-        autoStart: false 
+    } = useTimer({
+        expiryTimestamp,
+        onExpire: () => {
+            alert('El contest ha finalizado')
+        },
+        autoStart: isRunning
     });
 
-    // useEffect(() => {
-    //     if (isRunning && !timerIsRunning) {
-    //         resume();
-    //     } else if (!isRunning && timerIsRunning) {
-    //         pause();
-    //     }
-    // }, [isRunning, timerIsRunning, resume, pause]);
-
     useEffect(() => {
-        !localStorage.getItem("contestActive").then(res => {
-            if (!res) {
-                navigate("/create");
-            }
-        })
-    }, []);
-
-    useEffect(() => {
-        dispatch(setTimer({ seconds: timerSeconds, minutes: timerMinutes, hours: timerHours }));
+        if (((secondsPassed) / 60) >= (contestData.durationMinutes - contestData.frozenMinutes)) {
+            dispatch(setTimer({seconds: timerSeconds, minutes: timerMinutes, hours: timerHours, isFrozen: true}));
+        } else {
+            dispatch(setTimer({seconds: timerSeconds, minutes: timerMinutes, hours: timerHours, isFrozen: false}));
+        }
     }, [timerSeconds, timerMinutes, timerHours, dispatch]);
-    
+
     // -- TIMER --
     const handleStart = () => {
         dispatch(startTimer());
@@ -75,17 +79,21 @@ const JudgePage = () : ReactElement => {
         dispatch(resumeTimer());
         resume();
     };
-    
+
     const handlePause = () => {
         dispatch(pauseTimer());
         pause();
     };
-    
+
     const handleReset = () => {
         const timeReseted = new Date();
-        timeReseted.setSeconds(timeReseted.getSeconds() + contestData.durationMinutes * 60); 
-        dispatch(resetTimer({ seconds: timeReseted.getSeconds(), minutes: timeReseted.getMinutes(), hours: timeReseted.getHours() }));
+        timeReseted.setSeconds(timeReseted.getSeconds() + contestData.durationMinutes * 60);
         restart(timeReseted, false);
+        dispatch(resetTimer({
+            seconds: timerSeconds,
+            minutes: timerMinutes,
+            hours: timerHours
+        }));
         setInitialStateTimer(true);
     };
 
@@ -104,45 +112,41 @@ const JudgePage = () : ReactElement => {
         console.log(veredictTeam)
         console.log(veredictResult)
 
-        // Calculate the time of the submission since the start of the contest
-        const timeLeft = timerHours * 3600 + timerMinutes * 60 + timerSeconds;
-        const timeElapsed = Math.floor((contestData.durationMinutes * 60 - timeLeft)/60);
-
-        const teamSubmission: Submission  = {
+        const teamSubmission: Submission = {
             team: veredictTeam!.name,
             submission: {
                 problem: veredictProblem!.name,
                 result: veredictResult,
-                minutes: timeElapsed,
-                timeStamp: timeElapsed.toString(),
+                seconds: secondsPassed,
+                timeStamp: Date.now().toString(),
                 isFrozen: false
             }
         }
 
         dispatch(addTeamResult(teamSubmission))
         setModalProblemIsOpen(false);
-
-        // if (!validateProblemLetter(problemLetter)) {
-        //     setErrorMessageProblem(`Wrong letter, expected letter: ${String.fromCharCode("A".charCodeAt(0) + problems.length)}`);
-        //     return;
-        // } else if (problemName.length <= 0) {
-        //     setErrorMessageProblem("Problem name is required");
-        //     return;
-        // } else {
-        //     handleAddProblem();
-        //     setModalProblemIsOpen(false);
-        // }
-    };
+    }
     const closeModalWithoutAddProblem = () => {
         setModalProblemIsOpen(false);
     };
-    // -- 
+
+
+    const handleTerminate = () => {
+        const timeReseted = new Date();
+        restart(timeReseted, true);
+        dispatch(resetTimer({
+            seconds: timerSeconds,
+            minutes: timerMinutes,
+            hours: timerHours
+        }));
+    }
+
 
     return (
         <div className="text-white flex items-center justify-center h-[100vh] w-full px-20">
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
                 <div className="w-[35vw] h-[30vh] text-center border-2 border-white rounded-lg p-10 text-8xl">
-                    <Timer />
+                    <Timer/>
                 </div>
                 <div className="flex-1">
                     <p>Recent Submissions</p>
@@ -150,7 +154,7 @@ const JudgePage = () : ReactElement => {
             </div>
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
                 <div className="flex flex-col gap-3 h-[35vh] justify-center">
-                    <button 
+                    <button
                         onClick={
                             isRunning ? handlePause : initialStateTimer ? handleStart : handleResume
                         }
@@ -158,14 +162,22 @@ const JudgePage = () : ReactElement => {
                     >
                         {isRunning ? 'Pausar contest' : initialStateTimer ? 'Iniciar contest' : 'Reanudar contest'}
                     </button>
-                    <button 
-                        onClick={!initialStateTimer ? handleReset : () => {}}
+                    <button
+                        onClick={handleTerminate}
+                        className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
+                    >
+                        Acabar contest
+                    </button>
+                    <button
+                        onClick={!initialStateTimer ? handleReset : () => {
+                        }}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
                         Reiniciar contest
                     </button>
                     <button
-                    onClick={() => navigate('/revelator')}
+                        disabled={timerMinutes+timerSeconds+timerHours != 0}
+                        onClick={() => navigate('/revelator')}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black">
                         Ir al revelator
                     </button>
@@ -174,7 +186,7 @@ const JudgePage = () : ReactElement => {
                     <button
                         onClick={openModalProblem}
                         className="transition duration-500 w-[15vw] h-[12vh] text-xl p-3 border-2 rounded-full hover:bg-[#2596be] hover:text-white flex items-center justify-center">
-                        <PlusIcon className="w-6 h-6 mr-2" />
+                        <PlusIcon className="w-6 h-6 mr-2"/>
                         Agregar veredicto
                     </button>
                 </div>
@@ -197,11 +209,13 @@ const JudgePage = () : ReactElement => {
                         onChange={e => setVeredictTeam(contestTeams.find(t => {
                             return t.name == e.target.value
                         }))}
+                        value={""}
                     >
-                        <option value="" key={""} disabled selected>Select a team</option>
+                        <option value="" key={""} disabled>Select a team</option>
                         {
                             contestTeams.map(team => {
-                                return <option value={team.name} key={team.name} >[{team.shortName}] - {team.name}</option>
+                                return <option value={team.name} key={team.name}>[{team.shortName}]
+                                    - {team.name}</option>
                             })
                         }
                     </select>
@@ -210,8 +224,9 @@ const JudgePage = () : ReactElement => {
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
                         onChange={e => setVeredictProblem(contestProblems.find(t => t.name == e.target.value))}
+                        value={""}
                     >
-                        <option value="" key={""} disabled selected>Select a problem</option>
+                        <option value="" key={""} disabled>Select a problem</option>
                         {
                             contestProblems.map(problem => {
                                 return <option

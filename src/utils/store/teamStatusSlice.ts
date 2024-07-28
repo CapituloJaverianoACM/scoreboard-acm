@@ -35,7 +35,7 @@ const teamStatusSlice = createSlice({
             } else {
                 problemReceived.tries = (["WA", "TLE"].find(s => s == action.payload.submission.result) != null) ? problemReceived.tries + 1 : problemReceived.tries;
                 problemReceived.acceptedTimeStamp = action.payload.submission.timeStamp
-                problemReceived.minutes = action.payload.submission.minutes
+                problemReceived.seconds = action.payload.submission.seconds
                 problemReceived.status = (["WA", "TLE"].find(s => s == action.payload.submission.result) != null) ? "WA" : "SOLVED";
                 if (problemReceived.status == "WA") {
                     state.value.find(

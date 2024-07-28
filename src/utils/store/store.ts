@@ -29,7 +29,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(createStateSyncMiddleware({
+        getDefaultMiddleware({
+            serializableCheck: false
+        }).concat(createStateSyncMiddleware({
             blacklist: ['persist/PERSIST', 'persist/REHYDRATE'],
         })),
 });

@@ -9,7 +9,6 @@ const ScoreBoard = () : ReactElement => {
     const dispatch = useDispatch();
 
      const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
-    // console.log(`Este es el tam ${resultsList.length}`)
     const location = useLocation();
     const contest = useSelector((state : any) => state.contest.value);
     console.log(contest);
