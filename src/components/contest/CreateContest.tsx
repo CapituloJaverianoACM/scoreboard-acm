@@ -229,10 +229,10 @@ const CreateContest = (): ReactElement => {
         }));
 
         // Redirect to /judge if it is not possible to navigate to the main page
-        if (navigate("/judge", { replace: true }) === undefined) {
+        /*if (navigate("/judge", { replace: true }) === undefined) {
             navigate("/", { replace: true });
-        }
-
+        }*/
+        navigate("/judge", { replace: true })
         window.open("/scoreboard", "_blank");
     };
 
