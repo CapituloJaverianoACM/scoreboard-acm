@@ -4,6 +4,7 @@ import React from "react";
 import Revelator from "./components/scoreboard/Revelator.tsx";
 import Landing from "./components/landing/Landing.tsx";
 import ScoreBoard from "./components/scoreboard/ScoreBoard.tsx";
+import JudgePage from "./components/admin/JudgePage.tsx";
 import CreateContest from "./components/contest/CreateContest.tsx";
 
 const router = createBrowserRouter([
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
     {
         path: '/create',
         element: <CreateContest />
+    },
+    {
+        path: '/judge',
+        element: <JudgePage />
     }
 ])
 

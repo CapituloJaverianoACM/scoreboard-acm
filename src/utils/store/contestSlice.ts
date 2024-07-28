@@ -1,6 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Contest} from "../types/contest.ts";
-
 interface ContestState {
     value: Contest;
 }
@@ -10,7 +9,7 @@ const initialState: ContestState = {
         name: '',
         durationMinutes: 0,
         frozenMinutes: 0,
-    },
+    }
 };
 
 const contestSlice = createSlice({
@@ -19,10 +18,9 @@ const contestSlice = createSlice({
     reducers: {
         setContest: (state, action: PayloadAction<Contest>) => {
             state.value = action.payload;
-        },
+        }
     },
 });
 
 export const { setContest } = contestSlice.actions;
-
 export default contestSlice.reducer;

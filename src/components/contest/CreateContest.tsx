@@ -1,13 +1,12 @@
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {addProblem, clearProblems} from "../../utils/store/problemSlice";
+import { addProblem, clearProblems } from "../../utils/store/problemSlice";
 import { Problem, Team } from "../../utils/types/contest";
-import {addTeam, clearTeams} from "../../utils/store/teamSlice";
+import { addTeam, clearTeams } from "../../utils/store/teamSlice";
 import { useNavigate } from "react-router-dom";
 import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice";
 import Modal from 'react-modal';
 import { setContest } from "../../utils/store/contestSlice";
-import { clearResult } from "../../utils/store/resultsSlice";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
@@ -15,22 +14,26 @@ const CreateContest = (): ReactElement => {
 
     const [teams, setTeams] = useState<Team[]>([]);
     const [problems, setProblems] = useState<Problem[]>([]);
-
     const [problemLetter, setProblemLetter] = useState<string>("");
     const [problemName, setProblemName] = useState<string>("");
     const [errorMessageProblem, setErrorMessageProblem] = useState<string>("");
-
     const [teamName, setTeamName] = useState<string>("");
     const [teamShortName, setTeamShortName] = useState<string>("");
     const [errorMessageTeam, setErrorMessageTeam] = useState<string>("");
-
     const [modalProblemIsOpen, setModalProblemIsOpen] = useState(false);
     const [modalTeamIsOpen, setModalTeamIsOpen] = useState(false);
-
     const [contestName, setContestName] = useState<string>("");
     const [contestDuration, setContestDuration] = useState<string>("");
     const [contestFrozenTime, setContestFrozenTime] = useState<string>("");
     const [errorContestData, setErrorContestData] = useState<string>("");
+    const [contestActive, setContestActive] = useState<boolean>(false);
+
+    useEffect(() => {
+        const existingContest = localStorage.getItem("contestActive");
+        if (existingContest) {
+            setContestActive(true);
+        }
+    }, []);
 
     const handleContestNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setContestName(e.target.value);
@@ -178,26 +181,33 @@ const CreateContest = (): ReactElement => {
     };
 
     const handleCreateContest = () => {
-        // Delete all the previous data from the store
-        dispatch(clearTeams());
-        dispatch(clearProblems());
+        if (contestActive) {
+            setErrorContestData("A contest is already active. Please end the current contest before creating a new one.");
+            return;
+        }
 
         if (!handleContestValidations()) {
             return;
         }
+
+        // Delete all the previous data from the store
+        dispatch(clearTeams());
+        dispatch(clearProblems());
         dispatch(clearTeamStatus());
-        dispatch(clearResult());
+
         for (const team of teams) {
             const results = problems.map(problem => ({
                 problem,
                 tries: 0,
-                acceptedMinute: 0,
-                status: "AC"
+                acceptedTimeStamp: "",
+                status: "AC",
             }));
             dispatch(addTeamStatus({
                 team,
                 results,
-                penalty: 0
+                penalty: 0,
+                frozenSubmissions: [],
+                problemsSolved: 0
             }));
         }
 
@@ -209,6 +219,14 @@ const CreateContest = (): ReactElement => {
 
         problems.forEach(problem => dispatch(addProblem(problem)));
         teams.forEach(team => dispatch(addTeam(team)));
+
+        localStorage.setItem("contestActive", JSON.stringify({
+            contestName,
+            contestDuration,
+            contestFrozenTime,
+            problems,
+            teams
+        }));
 
         // Redirect to /judge if it is not possible to navigate to the main page
         if (navigate("/judge", { replace: true }) === undefined) {
