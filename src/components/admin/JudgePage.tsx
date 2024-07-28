@@ -210,7 +210,7 @@ const JudgePage = (): ReactElement => {
                             return t.name == e.target.value
                         }))}
                     >
-                        <option value="" key={""} disabled>Select a team</option>
+                        <option value="" key={""} disabled selected>Select a team</option>
                         {
                             contestTeams.map(team => {
                                 return <option value={team.name} key={team.name}>[{team.shortName}]
@@ -224,7 +224,7 @@ const JudgePage = (): ReactElement => {
                         required
                         onChange={e => setVeredictProblem(contestProblems.find(t => t.name == e.target.value))}
                     >
-                        <option value="" key={""} disabled>Select a problem</option>
+                        <option value="" key={""} disabled selected>Select a problem</option>
                         {
                             contestProblems.map(problem => {
                                 return <option
