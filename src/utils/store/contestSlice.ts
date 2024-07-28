@@ -9,7 +9,7 @@ const initialState: ContestState = {
         name: '',
         durationMinutes: 0,
         frozenMinutes: 0,
-    },
+    }
 };
 
 const contestSlice = createSlice({
@@ -18,7 +18,7 @@ const contestSlice = createSlice({
     reducers: {
         setContest: (state, action: PayloadAction<Contest>) => {
             state.value = action.payload;
-        },
+        }
     },
 });
 

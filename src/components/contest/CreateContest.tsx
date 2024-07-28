@@ -108,6 +108,15 @@ const CreateContest = (): ReactElement => {
         setTeamShortName(e.target.value);
     };
 
+    function validateTeamShortName(teamShortName: string): boolean {
+        // Validate unique team short name
+        if (teams.some(t => t.shortName === teamShortName)) {
+            setErrorMessageTeam("Team short name already exists");
+            return false;
+        }
+        return true;
+    }
+
     const handleCreateTeam = () => {
         const team: Team = {
             shortName: teamShortName,
@@ -124,7 +133,9 @@ const CreateContest = (): ReactElement => {
     };
 
     const closeModalAddTeam = () => {
-        if (teamShortName.length <= 0 && teamName.length <= 0) {
+        if (!validateTeamShortName(teamShortName)) {
+            setErrorMessageTeam("Team short name already exists");
+        } else if (teamShortName.length <= 0 && teamName.length <= 0) {
             setErrorMessageTeam("Team name and short name are required");
         } else if (teamShortName.length <= 0) {
             setErrorMessageTeam("Team short name is required");
@@ -199,13 +210,15 @@ const CreateContest = (): ReactElement => {
             const results = problems.map(problem => ({
                 problem,
                 tries: 0,
-                acceptedMinute: 0,
-                status: "AC"
+                acceptedTimeStamp: "",
+                status: "AC",
             }));
             dispatch(addTeamStatus({
                 team,
                 results,
-                penalty: 0
+                penalty: 0,
+                frozenSubmissions: [],
+                problemsSolved: 0
             }));
         }
 
@@ -227,10 +240,10 @@ const CreateContest = (): ReactElement => {
         }));
 
         // Redirect to /judge if it is not possible to navigate to the main page
-        if (navigate("/judge", { replace: true }) === undefined) {
+        /*if (navigate("/judge", { replace: true }) === undefined) {
             navigate("/", { replace: true });
-        }
-
+        }*/
+        navigate("/judge", { replace: true })
         window.open("/scoreboard", "_blank");
     };
 
