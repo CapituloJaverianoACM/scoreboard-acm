@@ -15,7 +15,7 @@ const ScoreBoard = () : ReactElement => {
     }, [teams]);
 
     return (
-        <div className="pl-10">
+        <div className="pl-10 flex justify-center flex-col items-center">
             {/* Contest data */}
             <div className="flex felx-row space-x-8 p-9 h-[200px] w-[1000px]">
                 <div className="flex flex-col space-y-3 w-[50%] rounded-md">
