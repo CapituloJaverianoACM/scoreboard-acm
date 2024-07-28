@@ -1,12 +1,18 @@
-import { ReactElement, useEffect } from "react";
+import {ReactElement, useEffect, useState} from "react";
 import { useSelector} from "react-redux";
-import { Problem, TeamStatus} from "../../utils/types/contest.ts";
+import {Problem, Team, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
 import Timer from "./Timer.tsx";
+import FlipMove from "react-flip-move";
 const ScoreBoard = () : ReactElement => {
     const contest = useSelector((state : any) => state.contest.value);
     const teams : TeamStatus[] = useSelector((state : any) => state.teamStatus.value);
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
+    const [teamsCopy, setTeamsCopy] = useState<TeamStatus[]>([]);
+
+    useEffect(() => {
+        setTeamsCopy(teams)
+    }, [teams]);
 
     return (
         <div className="pl-10">
@@ -44,9 +50,13 @@ const ScoreBoard = () : ReactElement => {
                 </div>
                 {/* Teams */}
                 <div className="flex flex-col space-y-4">
-                    {teams.map((teamStatus, index) => (
-                        <TeamRow key={index} pos={index+1} teamStatus={teamStatus} />
-                    ))}
+                    <FlipMove
+                        duration={500}
+                        staggerDurationBy="30"
+                        children={teamsCopy.map((teamStatus, index) => (
+                            <TeamRow key={teamStatus.team.shortName} pos={index+1} teamStatus={teamStatus} />
+                        ))}
+                     />
                 </div>
             </div>
         </div>

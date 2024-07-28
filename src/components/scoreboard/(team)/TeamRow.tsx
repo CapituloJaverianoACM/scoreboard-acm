@@ -1,12 +1,12 @@
-import { ReactElement } from "react";
+import { forwardRef } from "react";
 import { TeamStatus } from "../../../utils/types/contest";
 import TeamResults from "./TeamResults";
 
-const TeamRow = (prop : { pos:number, teamStatus : TeamStatus }) : ReactElement => {
+const TeamRow = forwardRef<HTMLDivElement, { pos:number, teamStatus : TeamStatus }> ((prop : { pos:number, teamStatus : TeamStatus }, ref)  => {
     const teamStatus : TeamStatus = prop.teamStatus;
     const pos : number = prop.pos;
     return (
-        <div>
+        <div ref={ref} className="mb-5">
             <div className="flex flex-row space-x-4">
                 {/* Team row */}
                 <div className="w-20 h-20 flex items-center justify-center text-center text-[25px] bg-[#0b8bc29f] rounded-md">
@@ -36,6 +36,6 @@ const TeamRow = (prop : { pos:number, teamStatus : TeamStatus }) : ReactElement 
             </div>
         </div>
     );
-}
+})
 
 export default TeamRow;
