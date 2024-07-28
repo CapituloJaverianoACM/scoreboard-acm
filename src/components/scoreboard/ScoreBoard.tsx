@@ -1,6 +1,6 @@
 import {ReactElement, useEffect, useState} from "react";
 import { useSelector} from "react-redux";
-import {Problem, Team, TeamStatus} from "../../utils/types/contest.ts";
+import {Problem, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
 import Timer from "./Timer.tsx";
 import FlipMove from "react-flip-move";
@@ -11,6 +11,7 @@ const ScoreBoard = () : ReactElement => {
     const [teamsCopy, setTeamsCopy] = useState<TeamStatus[]>([]);
 
     useEffect(() => {
+        if (teams.length === 0) location.reload()
         setTeamsCopy(teams)
     }, [teams]);
 
