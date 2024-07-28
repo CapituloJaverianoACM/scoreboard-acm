@@ -209,7 +209,6 @@ const JudgePage = (): ReactElement => {
                         onChange={e => setVeredictTeam(contestTeams.find(t => {
                             return t.name == e.target.value
                         }))}
-                        value={""}
                     >
                         <option value="" key={""} disabled>Select a team</option>
                         {
@@ -224,7 +223,6 @@ const JudgePage = (): ReactElement => {
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
                         onChange={e => setVeredictProblem(contestProblems.find(t => t.name == e.target.value))}
-                        value={""}
                     >
                         <option value="" key={""} disabled>Select a problem</option>
                         {
