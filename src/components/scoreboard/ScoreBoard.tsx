@@ -1,11 +1,12 @@
-import {ReactElement} from "react";
-import {useSelector} from "react-redux";
-import ScoreboardMessage from "../../utils/types/scoreboard.ts";
-import {Contest, Problem, TeamStatus} from "../../utils/types/contest.ts";
+import {ReactElement, useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
+import ScoreboardMessage, { TeamSubmission } from "../../utils/types/scoreboard.ts";
+import { Problem, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
 import {useLocation} from "react-router-dom";
 import Timer from "./Timer.tsx";
 const ScoreBoard = () : ReactElement => {
+    const dispatch = useDispatch();
 
      const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
     // console.log(`Este es el tam ${resultsList.length}`)
@@ -34,6 +35,9 @@ const ScoreBoard = () : ReactElement => {
                 <div className="flex flex-row space-x-4 text-[25px] ">
                     <div className="w-96 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
                         Teams
+                    </div>
+                    <div className="w-20 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
+                        #
                     </div>
                     {problems.map((problem, index) => {
                         return (

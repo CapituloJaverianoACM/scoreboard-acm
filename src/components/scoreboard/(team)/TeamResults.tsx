@@ -26,14 +26,15 @@ const TeamResults = (prop : { result : TeamResult }): ReactElement => {
                     (0)
                 </div>
             );
-        case "WA":
+        case "WA" || "TLE":
             return (
                 <div className={`${baseClasses} border-red-500 text-red-500`}>
-                    x <br></br>
+                    {result.status == "WA" ? "X" : "TLE"} <br></br>
                     ({result.tries})
                 </div>
             );
     }
+    return <div></div>;
 }
 
 export default TeamResults;

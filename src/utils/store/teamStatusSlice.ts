@@ -1,6 +1,5 @@
 import {createSlice, Draft} from "@reduxjs/toolkit";
 import {Problem, Submission, TeamResult, TeamStatus} from "../types/contest.ts";
-import { clear } from "./resultsSlice.ts";
 
 interface TeamStatusState {
     value: TeamStatus[];
