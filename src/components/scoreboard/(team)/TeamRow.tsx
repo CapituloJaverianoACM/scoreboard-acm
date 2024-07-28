@@ -21,6 +21,10 @@ const TeamRow = (prop : { pos:number, teamStatus : TeamStatus }) : ReactElement 
                         {teamStatus.team.name}
                     </div>
                 </div>
+                {/* Team problems solved */}
+                <div className="w-20 h-20 flex items-center justify-center text-center bg-[#ffffff18] rounded-md">
+                    {teamStatus.problemsSolved}
+                </div>
                 {/* Team penalty */}
                 <div className="w-20 h-20 flex items-center justify-center text-center bg-[#ffffff18] rounded-md">
                     {teamStatus.penalty}

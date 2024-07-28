@@ -39,6 +39,9 @@ const ScoreBoard = () : ReactElement => {
                     <div className="w-20 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
                         #
                     </div>
+                    <div className="w-20 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
+                        -
+                    </div>
                     {problems.map((problem, index) => {
                         return (
                             <div key={index} className="w-20 h-20 flex items-center justify-center text-center" style={{borderRadius: '5px'}}>
