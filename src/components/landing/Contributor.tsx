@@ -6,7 +6,7 @@ const Contributor = () : ReactElement => {
     const [contributors, setContributors] = useState<any[]>([]);
 
     useEffect(() => {
-        fetch("https://api.github.com/repos/CapituloJaverianoACM/scoreboard-acm/contributors?per_page=1", {
+        fetch("https://api.github.com/repos/CapituloJaverianoACM/scoreboard-acm/contributors", {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

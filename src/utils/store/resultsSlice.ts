@@ -7,18 +7,15 @@ export const resultsSlice = createSlice({
         value: Array<ScoreboardMessage>()
     },
     reducers: {
-        add: (state, result) => {
-            state.value.push({
-                type: "test",
-                payload: result.payload
-            })
+        addResult: (state, result) => {
+            state.value.push(result.payload)
         },
-        clear: (state) => {
+        clearResult: (state) => {
             state.value = new Array<ScoreboardMessage>()
         }
     }
 })
 
-export const { add, clear } = resultsSlice.actions;
+export const { addResult, clearResult } = resultsSlice.actions;
 
 export default resultsSlice.reducer;
