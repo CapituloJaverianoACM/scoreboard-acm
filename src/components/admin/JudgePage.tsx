@@ -184,6 +184,7 @@ const JudgePage = (): ReactElement => {
                 </div>
                 <div className="flex items-center justify-center">
                     <button
+                        disabled={!isRunning}
                         onClick={openModalProblem}
                         className="transition duration-500 w-[15vw] h-[12vh] text-xl p-3 border-2 rounded-full hover:bg-[#2596be] hover:text-white flex items-center justify-center">
                         <PlusIcon className="w-6 h-6 mr-2"/>

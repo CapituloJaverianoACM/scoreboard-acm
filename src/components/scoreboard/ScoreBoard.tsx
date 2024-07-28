@@ -51,7 +51,7 @@ const ScoreBoard = () : ReactElement => {
                 {/* Teams */}
                 <div className="flex flex-col space-y-4">
                     <FlipMove
-                        duration={500}
+                        duration={1000}
                         staggerDurationBy="30"
                         children={teamsCopy.map((teamStatus, index) => (
                             <TeamRow key={teamStatus.team.shortName} pos={index+1} teamStatus={teamStatus} />
