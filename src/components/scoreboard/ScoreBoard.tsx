@@ -4,6 +4,7 @@ import ScoreboardMessage from "../../utils/types/scoreboard.ts";
 import {Contest, Problem, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
 import {useLocation} from "react-router-dom";
+import Timer from "./Timer.tsx";
 const ScoreBoard = () : ReactElement => {
 
      const resultsList : ScoreboardMessage[] = useSelector((state : any) => state.results.value);
@@ -23,9 +24,9 @@ const ScoreBoard = () : ReactElement => {
                     <h1 className="text-2xl text-white"> Duration: {contest.durationMinutes} </h1>
                     <h1 className="text-2xl text-white"> Frozen time before end: {contest.frozenMinutes} </h1>
                 </div>
-                <div className="w-[50%] bg-[#ffffff70] rounded-md">
+                <div className="w-[35vw] h-full text-center border-2 border-white rounded-lg text-5xl">
                     { /* TODO: Timer */ }
-                    <h1 className="text-4xl font-bold text-center text-black"> TIMER </h1>
+                    <Timer />
                 </div>
             </div>
             {/* Table */}
