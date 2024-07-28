@@ -12,6 +12,7 @@ type TeamResult = {
     problem: Problem,
     tries: number,
     acceptedTimeStamp: string,
+    seconds: number,
     status: "SOLVED" | "AC" | "PENDING" | "WA"
 }
 
@@ -21,6 +22,7 @@ type Submission = {
         problem: string,
         result: string,
         timeStamp: string,
+        seconds: number,
         isFrozen: boolean
     }
 }

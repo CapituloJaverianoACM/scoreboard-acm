@@ -117,8 +117,9 @@ const JudgePage = (): ReactElement => {
             submission: {
                 problem: veredictProblem!.name,
                 result: veredictResult,
+                seconds: secondsPassed,
                 timeStamp: Date.now().toString(),
-                isFrozen: isFrozen
+                isFrozen: false
             }
         }
 
