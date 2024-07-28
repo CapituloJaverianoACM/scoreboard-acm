@@ -4,8 +4,8 @@ import { TeamResult } from "../../../utils/types/contest";
 const TeamResults = (prop : { result : TeamResult }): ReactElement => {
     let baseClasses = "border w-20 h-20 flex items-center justify-center text-center";
     const result = prop.result;
-    const hours = Math.floor(result.seconds / 3600);
-    const minutes = (result.seconds % 3600);
+    const minutes = Math.floor(result.seconds / 60);
+    const hours = Math.floor(minutes / 60);
     switch (result.status) {
         case "AC":
             return (
