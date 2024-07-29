@@ -98,8 +98,16 @@ const teamStatusSlice = createSlice({
                 return a.team.name.localeCompare(b.team.name);
             });
 
+        },
+
+        reverseFrozenSubmissions: (state) => {
+            for (const teamStatus of state.value) {
+                for (const result of teamStatus.results) {
+                    result.frozenSubmissions.reverse()
+                }
+            }
         }
     },
 });
-export const {addTeamStatus, clearTeamStatus, addTeamResult, popLastFrozenSubmission} = teamStatusSlice.actions;
+export const {addTeamStatus, clearTeamStatus, addTeamResult, popLastFrozenSubmission, reverseFrozenSubmissions} = teamStatusSlice.actions;
 export default teamStatusSlice.reducer;

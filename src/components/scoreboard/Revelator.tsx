@@ -1,9 +1,9 @@
 import {ReactElement, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
-import {Problem, Submission, TeamResult, TeamStatus} from "../../utils/types/contest.ts";
+import {Problem, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
 import FlipMove from "react-flip-move";
-import {addTeamResult, popLastFrozenSubmission} from "../../utils/store/teamStatusSlice.ts";
+import {popLastFrozenSubmission} from "../../utils/store/teamStatusSlice.ts";
 import {useNavigate} from "react-router-dom";
 const Revelator = () : ReactElement => {
     const contest = useSelector((state : any) => state.contest.value);
@@ -33,7 +33,6 @@ const Revelator = () : ReactElement => {
         if (teamsCopy[activeIdx].results.reduce((prevRes, res) => prevRes + res.frozenSubmissions.length, 0) == 0) {
             if (activeIdx-1 < 0) setActiveRevelate(true)
             setActiveIdx(activeIdx-1);
-            console.log(activeIdx)
         } else {
             revelateNextSubmission(teamsCopy[activeIdx])
         }

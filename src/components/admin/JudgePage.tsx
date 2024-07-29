@@ -4,7 +4,7 @@ import {PlusIcon} from "@heroicons/react/20/solid";
 import Timer from "../scoreboard/Timer";
 import {useTimer} from 'react-timer-hook';
 import {useNavigate} from "react-router-dom";
-import {addTeamResult} from "../../utils/store/teamStatusSlice.ts";
+import {addTeamResult, reverseFrozenSubmissions} from "../../utils/store/teamStatusSlice.ts";
 import {pauseTimer, resetTimer, resumeTimer, setTimer, startTimer} from "../../utils/store/timerSlice";
 import Modal from 'react-modal';
 import {Problem, Submission, Team} from "../../utils/types/contest.ts";
@@ -145,7 +145,10 @@ const JudgePage = (): ReactElement => {
         }));
     }
 
-
+    const handleGoToRevelator = () => {
+        dispatch(reverseFrozenSubmissions())
+        navigate('/revelator')
+    }
     return (
         <div className="text-white flex items-center justify-center h-[100vh] w-full px-20 mb-8">
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
@@ -228,7 +231,7 @@ const JudgePage = (): ReactElement => {
                     </button>
                     <button
                         disabled={timerMinutes+timerSeconds+timerHours != 0}
-                        onClick={() => navigate('/revelator')}
+                        onClick={handleGoToRevelator}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black">
                         Go to revelator
                     </button>
