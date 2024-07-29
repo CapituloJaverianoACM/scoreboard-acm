@@ -8,6 +8,8 @@ import {addTeamResult} from "../../utils/store/teamStatusSlice.ts";
 import {pauseTimer, resetTimer, resumeTimer, setTimer, startTimer} from "../../utils/store/timerSlice";
 import Modal from 'react-modal';
 import {Problem, Submission, Team} from "../../utils/types/contest.ts";
+import { addSubmission } from "../../utils/store/submissionsSlice.ts";
+import FlipMove from "react-flip-move";
 
 const JudgePage = (): ReactElement => {
     const navigate = useNavigate();
@@ -17,6 +19,7 @@ const JudgePage = (): ReactElement => {
     const contestData = useSelector((state: any) => state.contest.value);
     const contestTeams = useSelector((state: any) => state.teams.value);
     const contestProblems = useSelector((state: any) => state.problems.value);
+    const submissions = useSelector((state: any) => state.submissions.value);
     const expiryTimestamp = new Date();
 
     //Estados del componente
@@ -124,6 +127,7 @@ const JudgePage = (): ReactElement => {
         }
 
         dispatch(addTeamResult(teamSubmission))
+        dispatch(addSubmission(teamSubmission))
         setModalProblemIsOpen(false);
     }
     const closeModalWithoutAddProblem = () => {
@@ -143,15 +147,62 @@ const JudgePage = (): ReactElement => {
 
 
     return (
-        <div className="text-white flex items-center justify-center h-[100vh] w-full px-20">
+        <div className="text-white flex items-center justify-center h-[100vh] w-full px-20 mb-8">
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
                 <div className="w-[35vw] h-[30vh] text-center border-2 border-white rounded-lg p-10 text-8xl">
-                    <Timer/>
+                    <Timer />
                 </div>
-                <div className="flex-1">
-                    <p>Recent Submissions</p>
+
+                <div className="w-[35vw] max-h-[60vh] text-center border-2 border-white rounded-lg p-4 flex flex-col">
+                    <p className="text-2xl font-bold mb-4">Recent Submissions</p>
+                    <div className="mb-2">
+                        <div className="flex flex-row space-x-4 items-center justify-center text-center font-bold">
+                            {/* Header Row */}
+                            <div className="w-36 h-20 flex items-center justify-center text-left">
+                                TEAM
+                            </div>
+                            <div className="w-36 h-20 flex items-center justify-center text-left">
+                                PROBLEM
+                            </div>
+                            <div className="w-36 h-20 flex items-center justify-center text-left">
+                                VEREDICT
+                            </div>
+                            <div className="w-36 h-20 flex items-center justify-center text-left">
+                                MINUTE
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex-1 overflow-y-auto">
+                        <FlipMove duration={1000} staggerDurationBy="30">
+                            {submissions.map((submission, index) => (
+                                <div key={index} className="mb-4">
+                                    <div className="flex flex-row space-x-4 items-center justify-center text-center">
+                                        {/* Team */}
+                                        <div className="w-36 h-20 flex items-center justify-center text-center bg-[#171717] rounded-md">
+                                            <div className="text-[#0b8bc2]">
+                                                <b>[ {submission.team} ]</b>
+                                            </div>
+                                        </div>
+                                        {/* Problem */}
+                                        <div className="w-36 h-20 flex items-center justify-center text-center bg-[#171717] rounded-md">
+                                            {submission.submission.problem}
+                                        </div>
+                                        {/* Veredict */}
+                                        <div className={`w-36 h-20 flex items-center justify-center text-center bg-[#171717] rounded-md ${submission.submission.result === "CORRECT" ? "text-green-500" : "text-red-500"}`}>
+                                            {submission.submission.result}
+                                        </div>
+                                        {/* Time */}
+                                        <div className="w-36 h-20 flex items-center justify-center text-center bg-[#171717] rounded-md">
+                                            {Math.floor(submission.submission.seconds / 60)}:{String(submission.submission.seconds % 60).padStart(2, '0')}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </FlipMove>
+                    </div>
                 </div>
             </div>
+
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
                 <div className="flex flex-col gap-3 h-[35vh] justify-center">
                     <button
@@ -267,6 +318,8 @@ const JudgePage = (): ReactElement => {
             </Modal>
         </div>
     );
+    
+    
 }
 
 export default JudgePage;
