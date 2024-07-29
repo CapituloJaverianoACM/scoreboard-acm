@@ -8,6 +8,7 @@ import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlic
 import Modal from 'react-modal';
 import { setContest } from "../../utils/store/contestSlice";
 import FlipMove from "react-flip-move";
+import { clearSubmissions } from "../../utils/store/submissionsSlice";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
@@ -30,9 +31,16 @@ const CreateContest = (): ReactElement => {
     const [contestActive, setContestActive] = useState<boolean>(false);
 
     useEffect(() => {
+        //localStorage.clear();
         const existingContest = localStorage.getItem("contestActive");
         if (existingContest) {
             setContestActive(true);
+        }
+        else{
+            dispatch(clearProblems());
+            dispatch(clearTeams());
+            dispatch(clearSubmissions());
+            dispatch(clearTeamStatus());
         }
     }, []);
 
