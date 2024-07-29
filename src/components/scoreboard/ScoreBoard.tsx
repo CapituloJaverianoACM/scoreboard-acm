@@ -55,7 +55,7 @@ const ScoreBoard = () : ReactElement => {
                         duration={1000}
                         staggerDurationBy="30"
                         children={teamsCopy.map((teamStatus, index) => (
-                            <TeamRow key={teamStatus.team.shortName} pos={index+1} teamStatus={teamStatus} />
+                            <TeamRow key={teamStatus.team.shortName} pos={index+1} teamStatus={teamStatus} isRevelator={false} lights={false}/>
                         ))}
                      />
                 </div>

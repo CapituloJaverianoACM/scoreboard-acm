@@ -1,19 +1,47 @@
 import {ReactElement, useEffect, useState} from "react";
-import { useSelector} from "react-redux";
-import {Problem, TeamStatus} from "../../utils/types/contest.ts";
+import {useDispatch, useSelector} from "react-redux";
+import {Problem, Submission, TeamResult, TeamStatus} from "../../utils/types/contest.ts";
 import TeamRow from "./(team)/TeamRow.tsx";
-import Timer from "./Timer.tsx";
 import FlipMove from "react-flip-move";
+import {addTeamResult, popLastFrozenSubmission} from "../../utils/store/teamStatusSlice.ts";
+import {useNavigate} from "react-router-dom";
 const Revelator = () : ReactElement => {
     const contest = useSelector((state : any) => state.contest.value);
     const teams : TeamStatus[] = useSelector((state : any) => state.teamStatus.value);
     const problems : Problem[] = useSelector((state : any) => state.problems.value);
     const [teamsCopy, setTeamsCopy] = useState<TeamStatus[]>([]);
+    const dispatch = useDispatch();
+    const [activeIdx, setActiveIdx] = useState<number>(teams.length-1);
+    const [activeRevelate, setActiveRevelate] = useState<boolean>(false)
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         if (teams.length === 0) location.reload()
         setTeamsCopy(teams)
     }, [teams]);
+
+    const revelateNextSubmission = (teamStatus : TeamStatus) => {
+        for (const result of teamStatus.results) {
+            if (result.frozenSubmissions.length == 0) continue;
+            dispatch(popLastFrozenSubmission(teamStatus))
+        }
+    }
+
+    const revelate = () => {
+        if (teamsCopy[activeIdx].results.reduce((prevRes, res) => prevRes + res.frozenSubmissions.length, 0) == 0) {
+            if (activeIdx-1 < 0) setActiveRevelate(true)
+            setActiveIdx(activeIdx-1);
+            console.log(activeIdx)
+        } else {
+            revelateNextSubmission(teamsCopy[activeIdx])
+        }
+    }
+
+    const terminateContest = () => {
+        localStorage.clear()
+        navigate("/")
+    }
 
     return (
         <div className="pl-10 flex justify-center flex-col items-center">
@@ -24,11 +52,19 @@ const Revelator = () : ReactElement => {
                     <h1 className="text-2xl text-white"> Duration: {contest.durationMinutes} </h1>
                     <h1 className="text-2xl text-white"> Frozen time before end: {contest.frozenMinutes} </h1>
                 </div>
-                <div className="w-[35vw] h-full text-center rounded-lg text-5xl">
+                <div className="flex flex-col items-center justify-center gap-2 w-[35vw] h-full text-center rounded-lg text-5xl">
                     <button
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
+                        onClick={revelate}
+                        disabled={activeRevelate}
                     >
                         +1
+                    </button>
+                    <button
+                        className={"transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black" + (!activeRevelate ? "" : " animate-[lights_1s_infinite]")}
+                        onClick={terminateContest}
+                    >
+                        Terminate
                     </button>
                 </div>
             </div>
@@ -60,7 +96,7 @@ const Revelator = () : ReactElement => {
                         duration={1000}
                         staggerDurationBy="30"
                         children={teamsCopy.map((teamStatus, index) => (
-                            <TeamRow key={teamStatus.team.shortName} pos={index+1} teamStatus={teamStatus} />
+                            <TeamRow key={teamStatus.team.shortName} pos={index+1} teamStatus={teamStatus} isRevelator={true} lights={activeIdx == index}/>
                         ))}
                     />
                 </div>

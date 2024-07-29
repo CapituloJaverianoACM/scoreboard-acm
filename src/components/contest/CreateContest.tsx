@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { addTeamStatus, clearTeamStatus } from "../../utils/store/teamStatusSlice";
 import Modal from 'react-modal';
 import { setContest } from "../../utils/store/contestSlice";
+import FlipMove from "react-flip-move";
 
 const CreateContest = (): ReactElement => {
     const dispatch = useDispatch();
@@ -212,12 +213,12 @@ const CreateContest = (): ReactElement => {
                 tries: 0,
                 acceptedTimeStamp: "",
                 status: "AC",
+                frozenSubmissions: []
             }));
             dispatch(addTeamStatus({
                 team,
                 results,
                 penalty: 0,
-                frozenSubmissions: [],
                 problemsSolved: 0
             }));
         }
@@ -279,26 +280,34 @@ const CreateContest = (): ReactElement => {
             <div className="grid grid-cols-2 gap-8 w-full px-12">
                 <div>
                     <h2 className="text-2xl mb-2">Problems List</h2>
-                    <ul className="max-h-[42vh] overflow-y-auto grid grid-cols-2 gap-4">
-                        {problems.map((problem, index) => (
-                            <li key={index} className="bg-gray-800 p-2 rounded mb-2">
+                    <FlipMove
+                        duration={500}
+                        typeName={"ul"}
+                        className={"max-h-[42vh] overflow-y-auto grid grid-cols-2 gap-2"}
+                    >
+                        {problems.map((problem) => (
+                            <li key={problem.letter+problem.name} className="bg-gray-800 p-2 rounded mb-2">
                                 {problem.letter}: {problem.name}
                             </li>
                         ))}
-                    </ul>
+                    </FlipMove>
                     <button onClick={openModalProblem} className="p-2 bg-[#0b8bc29f] rounded text-white mt-4">
                         Add Problem
                     </button>
                 </div>
                 <div>
                     <h2 className="text-2xl mb-2">Teams List</h2>
-                    <ul className="max-h-[42vh] overflow-y-auto grid grid-cols-2 gap-4">
-                        {teams.map((team, index) => (
-                            <li key={index} className="bg-gray-800 p-2 rounded mb-2">
+                    <FlipMove
+                        duration={500}
+                        typeName={"ul"}
+                        className={"max-h-[42vh] overflow-y-auto grid grid-cols-2 gap-2"}
+                    >
+                        {teams.map((team) => (
+                            <li key={team.shortName} className="bg-gray-800 p-2 rounded mb-2">
                                 {team.shortName}: {team.name}
                             </li>
                         ))}
-                    </ul>
+                    </FlipMove>
                     <button onClick={openModalTeam} className="p-2 bg-[#0b8bc29f] rounded text-white mt-4">
                         Add Team
                     </button>
