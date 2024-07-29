@@ -13,7 +13,8 @@ type TeamResult = {
     tries: number,
     acceptedTimeStamp: string,
     seconds: number,
-    status: "SOLVED" | "AC" | "PENDING" | "WA"
+    status: "SOLVED" | "AC" | "PENDING" | "WA",
+    frozenSubmissions: Submission[]
 }
 
 type Submission = {
@@ -31,7 +32,6 @@ type TeamStatus = {
     team: Team,
     results: TeamResult[]
     penalty: number,
-    frozenSubmissions: Submission[],
     problemsSolved: number
 }
 

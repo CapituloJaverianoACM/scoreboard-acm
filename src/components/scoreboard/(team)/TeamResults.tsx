@@ -1,12 +1,14 @@
 import { ReactElement } from "react";
-import { TeamResult } from "../../../utils/types/contest";
+import {Submission, TeamResult} from "../../../utils/types/contest";
 
-const TeamResults = (prop : { result : TeamResult }): ReactElement => {
+const TeamResults = (prop : { result : TeamResult, frozenSubmissions: Submission[] }): ReactElement => {
     let baseClasses = "border w-20 h-20 flex items-center justify-center text-center rounded-lg";
-    const result = prop.result;
+    const { result, frozenSubmissions } = prop;
+    let finalStatus = result.status;
     const minutes = Math.floor(result.seconds / 60);
     const hours = Math.floor(minutes / 60);
-    switch (result.status) {
+    if (frozenSubmissions.length > 0) finalStatus = "PENDING"
+    switch (finalStatus) {
         case "AC":
             return (
                 <div className={`${baseClasses} border-white bg-black text-white`}>
@@ -24,7 +26,7 @@ const TeamResults = (prop : { result : TeamResult }): ReactElement => {
             return (
                 <div className={`${baseClasses} bg-yellow-500 border-transparent text-black`}>
                     ? <br></br>
-                    (0)
+                    ({frozenSubmissions.length})
                 </div>
             );
         case "WA":

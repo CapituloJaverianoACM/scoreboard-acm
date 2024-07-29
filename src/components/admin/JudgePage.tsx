@@ -160,26 +160,26 @@ const JudgePage = (): ReactElement => {
                         }
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
-                        {isRunning ? 'Pausar contest' : initialStateTimer ? 'Iniciar contest' : 'Reanudar contest'}
+                        {isRunning ? 'Pause contest' : initialStateTimer ? 'Start contest' : 'Resume contest'}
                     </button>
                     <button
                         onClick={handleTerminate}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
-                        Acabar contest
+                        Finish contest
                     </button>
                     <button
                         onClick={!initialStateTimer ? handleReset : () => {
                         }}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black"
                     >
-                        Reiniciar contest
+                        Restart contest
                     </button>
                     <button
                         disabled={timerMinutes+timerSeconds+timerHours != 0}
                         onClick={() => navigate('/revelator')}
                         className="transition duration-500 w-[15vw] text-xl p-3 border-2 rounded-full hover:bg-white hover:text-black">
-                        Ir al revelator
+                        Go to revelator
                     </button>
                 </div>
                 <div className="flex items-center justify-center">
@@ -188,7 +188,7 @@ const JudgePage = (): ReactElement => {
                         onClick={openModalProblem}
                         className="transition duration-500 w-[15vw] h-[12vh] text-xl p-3 border-2 rounded-full hover:bg-[#2596be] hover:text-white flex items-center justify-center">
                         <PlusIcon className="w-6 h-6 mr-2"/>
-                        Agregar veredicto
+                        Add veredict
                     </button>
                 </div>
             </div>
@@ -202,18 +202,18 @@ const JudgePage = (): ReactElement => {
                 overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
             >
                 <div className="flex flex-col items-center mt-4 w-full">
-                    <h2 className="text-2xl mb-2 text-white">Agregue su veredicto.</h2>
+                    <h2 className="text-2xl mb-2 text-white">Add a veredict.</h2>
                     {/* Team */}
                     <select
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
-                        onChange={e => setVeredictTeam(contestTeams.find(t => {
+                        onChange={e => setVeredictTeam(contestTeams.find((t : Team) => {
                             return t.name == e.target.value
                         }))}
                     >
                         <option value="" key={""} disabled selected>Select a team</option>
                         {
-                            contestTeams.map(team => {
+                            contestTeams.map((team : Team) => {
                                 return <option value={team.name} key={team.name}>[{team.shortName}]
                                     - {team.name}</option>
                             })
@@ -223,11 +223,11 @@ const JudgePage = (): ReactElement => {
                     <select
                         className="p-2 m-2 w-[85%] bg-gray-200 text-black border border-gray-400 rounded"
                         required
-                        onChange={e => setVeredictProblem(contestProblems.find(t => t.name == e.target.value))}
+                        onChange={e => setVeredictProblem(contestProblems.find((t : Problem) => t.name == e.target.value))}
                     >
                         <option value="" key={""} disabled selected>Select a problem</option>
                         {
-                            contestProblems.map(problem => {
+                            contestProblems.map((problem : Problem) => {
                                 return <option
                                     value={problem.name}
                                     key={problem.name}
@@ -254,7 +254,7 @@ const JudgePage = (): ReactElement => {
                             onClick={closeModalAdd}
                             className="p-2 w-[40%] bg-black border-2 border-white rounded-2xl text-white mt-4"
                         >
-                            Add Problem
+                            Add Veredict
                         </button>
                         <button
                             onClick={closeModalWithoutAddProblem}

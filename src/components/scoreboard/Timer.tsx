@@ -11,12 +11,12 @@ const Timer: React.FC = ()=> {
 
     return (
         <div className="flex flex-col items-center justify-center w-full h-full">
-            <p className='text-sm'>Tiempo restante:</p>
+            <p className='text-sm'>Time left:</p>
             <div>
                 <span>{String(hours).padStart(2, '0')}</span>:<span>{String(minutes).padStart(2, '0')}</span>:<span>{String(seconds).padStart(2, '0')}</span>
             </div>
-            <p className='text-sm'>{isFrozen ? 'El scoreboard esta congelado' : (
-                isRunning ? 'El tiempo esta corriendo' : ""
+            <p className='text-sm'>{isFrozen ? 'Scoreboard frozen' : (
+                isRunning ? 'Time is running' : ""
             )}</p>
             {isFrozen ? <MoonIcon /> : ""}
         </div>
