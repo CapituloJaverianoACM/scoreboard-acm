@@ -6,6 +6,7 @@ import Landing from "./components/landing/Landing.tsx";
 import ScoreBoard from "./components/scoreboard/ScoreBoard.tsx";
 import JudgePage from "./components/admin/JudgePage.tsx";
 import CreateContest from "./components/contest/CreateContest.tsx";
+import RoutesGuard from "./utils/middleware/RoutesGuard.tsx";
 
 const router = createBrowserRouter([
     {
@@ -13,16 +14,12 @@ const router = createBrowserRouter([
         element: <Landing />
     },
     {
-        path: '/admin',
-        element: <AdminPage />
-    },
-    {
         path: '/revelator',
-        element: <Revelator />
+        element: <RoutesGuard outlet={<Revelator />}/>
     },
     {
         path: '/scoreboard',
-        element: <ScoreBoard />
+        element: <RoutesGuard outlet={<ScoreBoard />} />
     },
     {
         path: '/create',
@@ -30,7 +27,7 @@ const router = createBrowserRouter([
     },
     {
         path: '/judge',
-        element: <JudgePage />
+        element: <RoutesGuard outlet={<JudgePage />} />
     }
 ])
 

@@ -27,11 +27,10 @@ const teamStatusSlice = createSlice({
                 teamStat => action.payload.team == teamStat.team.name)!.
             results.find(p => action.payload.submission.problem == p.problem.name);
 
-            if (!problemReceived || problemReceived.status == "SOLVED") return
+            if (!problemReceived || (problemReceived.status == "SOLVED" && !action.payload.submission.isFrozen)) return
 
             if (action.payload.submission.isFrozen) {
-                state.value.find(
-                    teamStat => action.payload.team == teamStat.team.name)?.frozenSubmissions.push(action.payload)
+                problemReceived?.frozenSubmissions.push(action.payload)
             } else {
                 problemReceived.tries = (["WA", "TLE"].find(s => s == action.payload.submission.result) != null) ? problemReceived.tries + 1 : problemReceived.tries;
                 problemReceived.acceptedTimeStamp = action.payload.submission.timeStamp
@@ -43,8 +42,8 @@ const teamStatusSlice = createSlice({
                 } else if (problemReceived.status == "SOLVED") {
                     state.value.find(
                         teamStat => action.payload.team == teamStat.team.name)!.problemsSolved++;
-                        state.value.find(
-                            teamStat => action.payload.team == teamStat.team.name)!.penalty += Math.floor(problemReceived.seconds / 60);
+                    state.value.find(
+                        teamStat => action.payload.team == teamStat.team.name)!.penalty += Math.floor(problemReceived.seconds / 60);
                 }
             }
             state.value.sort((a, b) => {
@@ -56,8 +55,51 @@ const teamStatusSlice = createSlice({
                 }
                 return a.team.name.localeCompare(b.team.name);
             });
+        },
+        popLastFrozenSubmission: (state, action : {
+            payload: TeamStatus,
+            type: string
+        }) => {
+
+            let targetSubmission : Draft<Submission> | undefined = undefined;
+            let problemReceived: Draft<TeamResult>| undefined = undefined;
+            const teamAffected = state.value.find(t => t.team.shortName == action.payload.team.shortName);
+            for (const result of teamAffected!.results) {
+                if (result.frozenSubmissions.length == 0) continue
+
+                targetSubmission = result.frozenSubmissions.pop();
+                problemReceived = result;
+                break
+            }
+
+            if (!targetSubmission || !problemReceived) return;
+
+            problemReceived.tries = (["WA", "TLE"].find(s => s == targetSubmission.submission.result) != null) ? problemReceived.tries + 1 : problemReceived.tries;
+            problemReceived.acceptedTimeStamp = targetSubmission.submission.timeStamp
+            problemReceived.seconds = targetSubmission.submission.seconds
+            problemReceived.status = (["WA", "TLE"].find(s => s == targetSubmission.submission.result) != null) ? "WA" : "SOLVED";
+            if (problemReceived.status == "WA") {
+                state.value.find(
+                    teamStat => targetSubmission.team == teamStat.team.name)!.penalty+=20;
+            } else if (problemReceived.status == "SOLVED") {
+                state.value.find(
+                    teamStat => targetSubmission.team == teamStat.team.name)!.problemsSolved++;
+                state.value.find(
+                    teamStat => targetSubmission.team == teamStat.team.name)!.penalty += Math.floor(problemReceived.seconds / 60);
+                problemReceived.frozenSubmissions = []
+            }
+            state.value.sort((a, b) => {
+                if (a.problemsSolved != b.problemsSolved) {
+                    return b.problemsSolved - a.problemsSolved;
+                }
+                if (a.penalty != b.penalty) {
+                    return a.penalty - b.penalty;
+                }
+                return a.team.name.localeCompare(b.team.name);
+            });
+
         }
     },
 });
-export const {addTeamStatus, clearTeamStatus, addTeamResult} = teamStatusSlice.actions;
+export const {addTeamStatus, clearTeamStatus, addTeamResult, popLastFrozenSubmission} = teamStatusSlice.actions;
 export default teamStatusSlice.reducer;
