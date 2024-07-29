@@ -25,6 +25,7 @@ const Revelator = () : ReactElement => {
         for (const result of teamStatus.results) {
             if (result.frozenSubmissions.length == 0) continue;
             dispatch(popLastFrozenSubmission(teamStatus))
+            break
         }
     }
 
