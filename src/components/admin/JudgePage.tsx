@@ -8,6 +8,8 @@ import {addTeamResult} from "../../utils/store/teamStatusSlice.ts";
 import {pauseTimer, resetTimer, resumeTimer, setTimer, startTimer} from "../../utils/store/timerSlice";
 import Modal from 'react-modal';
 import {Problem, Submission, Team} from "../../utils/types/contest.ts";
+import { addSubmission } from "../../utils/store/submissionsSlice.ts";
+import FlipMove from "react-flip-move";
 
 const JudgePage = (): ReactElement => {
     const navigate = useNavigate();
@@ -17,6 +19,7 @@ const JudgePage = (): ReactElement => {
     const contestData = useSelector((state: any) => state.contest.value);
     const contestTeams = useSelector((state: any) => state.teams.value);
     const contestProblems = useSelector((state: any) => state.problems.value);
+    const submissions = useSelector((state: any) => state.submissions.value);
     const expiryTimestamp = new Date();
 
     //Estados del componente
@@ -25,6 +28,7 @@ const JudgePage = (): ReactElement => {
     const [veredictTeam, setVeredictTeam] = useState<Team | null>(null);
     const [veredictProblem, setVeredictProblem] = useState<Problem | null>(null);
     const [veredictResult, setVeredictResult] = useState<string>("")
+
 
     if (hours == -1) {
         expiryTimestamp.setSeconds(expiryTimestamp.getSeconds() + contestData.durationMinutes * 60);
@@ -124,6 +128,7 @@ const JudgePage = (): ReactElement => {
         }
 
         dispatch(addTeamResult(teamSubmission))
+        dispatch(addSubmission(teamSubmission))
         setModalProblemIsOpen(false);
     }
     const closeModalWithoutAddProblem = () => {
@@ -150,7 +155,17 @@ const JudgePage = (): ReactElement => {
                 </div>
                 <div className="flex-1">
                     <p>Recent Submissions</p>
+                    <FlipMove
+                        duration={1000}
+                        staggerDurationBy="30"
+                        children={submissions.map((submission: Submission, index: number) => (
+                            <div key={index} className="flex items-center justify-center">
+                                <p>{submission.team} - {submission.submission.problem} - {submission.submission.result} - {submission.submission.seconds} - {submission.submission.timeStamp}</p>
+                            </div>
+                        ))}
+                    />
                 </div>
+                    
             </div>
             <div className="w-full h-full flex flex-col items-center pt-24 gap-12">
                 <div className="flex flex-col gap-3 h-[35vh] justify-center">
